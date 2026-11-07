@@ -6,10 +6,12 @@ import live.craftmeet.user.utils.Constants;
 
 public record UpdateUserPasswordRequest(
         @NotBlank
-        @Size(min = Constants.MIN_PASSWORD_LENGTH, max = Constants.MAX_PASSWORD_LENGTH, message = "Old password must be between 12 and 72 characters")
+        @Size(min = Constants.MIN_PASSWORD_LENGTH, max = Constants.MAX_PASSWORD_LENGTH,
+                message = "New password must be between {min} and {max} characters")
         String oldPassword,
         @NotBlank
-        @Size(min = Constants.MIN_PASSWORD_LENGTH, max = Constants.MAX_PASSWORD_LENGTH, message = "New password must be between 12 and 72 characters")
+        @Size(min = Constants.MIN_PASSWORD_LENGTH, max = Constants.MAX_PASSWORD_LENGTH,
+                message = "New password must be between {min} and {max} characters")
         String newPassword
 ) {
 

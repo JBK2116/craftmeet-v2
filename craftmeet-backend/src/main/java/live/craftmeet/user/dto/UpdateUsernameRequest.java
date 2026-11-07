@@ -11,7 +11,8 @@ import live.craftmeet.user.utils.Constants;
  */
 public record UpdateUsernameRequest(
         @NotBlank
-        @Size(min = Constants.MIN_USERNAME_LENGTH, max = Constants.MAX_USERNAME_LENGTH, message = "Username must be between " + Constants.MIN_USERNAME_LENGTH + " and " + Constants.MAX_USERNAME_LENGTH + " characters")
+        @Size(min = Constants.MIN_USERNAME_LENGTH, max = Constants.MAX_USERNAME_LENGTH,
+                message = "Username must be between {min} and {max} characters")
         @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "Username must only contain alphanumeric characters")
         String newUsername
 ) {
