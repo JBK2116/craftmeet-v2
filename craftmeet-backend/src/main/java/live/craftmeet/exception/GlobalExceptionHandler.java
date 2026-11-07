@@ -47,4 +47,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ec.getHttpStatus().value())
                 .body(ErrorResponse.of(ec, ec.getMessage(), req.getRequestURI()));
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleExplicitValidation(IllegalArgumentException ex, HttpServletRequest req) {
+        ErrorCode ec = ErrorCode.VALIDATION_FAILED;
+        log.error("[{}] {} {}", ec, req.getMethod(), req.getRequestURI(), ex);
+        return ResponseEntity.status(ec.getHttpStatus().value())
+                .body(new ErrorResponse(ec.getHttpStatus().value(), ec.name(), ec.getMessage(),
+                        req.getRequestURI(), Instant.now(), null));
+    }
 }
