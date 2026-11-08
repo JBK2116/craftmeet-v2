@@ -7,6 +7,7 @@ import live.craftmeet.user.exception.UserNotFoundException;
 import live.craftmeet.user.model.User;
 import live.craftmeet.user.repository.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -22,29 +23,34 @@ import java.util.UUID;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
-     * Creates a new user account using the provided email, hashed password, and username.
-     * Verifies that no user already exists with the given email before persisting the account.
+     * Creates a new user account using the provided email, password, and username.
+     * The password is encoded before persisting the account.
+     * Verifies that no user already exists with the given email before persisting
+     * the account, and translates a username persistence conflict into a
+     * {@link UserAlreadyExistsException}.
      *
-     * @param email the email address for the new user account
-     * @param hashedPassword the hashed password for the new user account
+     * @param email    the email address for the new user account
+     * @param password the raw password for the new user account
      * @param username the username for the new user account
      * @return the created user's account information
      */
     @Transactional
-    public UserResponse createUser(String email, String hashedPassword, String username) {
+    public UserResponse createUser(String email, String password, String username) {
         if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException(email);
         }
 
         User user = new User();
         user.setEmail(email);
-        user.setPassword(hashedPassword);
+        user.setPassword(passwordEncoder.encode(password));
         user.setUsername(username);
 
         try {
@@ -57,17 +63,21 @@ public class UserService {
     }
 
     /**
-     * Creates a new verified user account using the provided email and Google identifier.
-     * The account is marked as verified and the verification timestamp is set to the current time.
-     * If an account with the given email already exists, or persistence fails due to a data integrity violation, a UserAlreadyExistsException is thrown.
+     * Creates a new verified user account using the provided email and Google
+     * identifier.
+     * The account is marked as verified and the verification timestamp is set to
+     * the current time.
+     * If an account with the given email already exists, or persistence fails due
+     * to a data integrity violation, a UserAlreadyExistsException is thrown.
      *
-     * @param email the email address for the new user account
+     * @param email    the email address for the new user account
      * @param googleId the Google identifier associated with the user account
      * @return the created user account represented as a UserResponse
-     * @throws UserAlreadyExistsException if a user with the given email already exists
+     * @throws UserAlreadyExistsException if a user with the given email already
+     *                                    exists
      */
     @Transactional
-    public UserResponse createUserGoogle(String email,  String googleId) {
+    public UserResponse createUserGoogle(String email, String googleId) {
         if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException(email);
         }
@@ -90,7 +100,8 @@ public class UserService {
     /**
      * Updates the username of the user identified by the given user ID.
      *
-     * @param userId the unique identifier of the user whose username will be updated
+     * @param userId   the unique identifier of the user whose username will be
+     *                 updated
      * @param username the new username to assign to the user
      * @return the updated user's account information
      */
@@ -104,17 +115,18 @@ public class UserService {
 
     /**
      * Updates the password of the user identified by the given user ID.
-     * The supplied password is expected to be already hashed.
+     * The supplied password is encoded before being assigned to the user.
      *
-     * @param userId the unique identifier of the user whose password will be updated
-     * @param hashedPassword the new hashed password to assign to the user
+     * @param userId         the unique identifier of the user whose password will
+     *                       be updated
+     * @param hashedPassword the new password to encode and assign to the user
      * @return the updated user's account information
      * @throws UserNotFoundException if no user exists with the given user ID
      */
     @Transactional
     public UserResponse updatePassword(UUID userId, String hashedPassword) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-        user.setPassword(hashedPassword);
+        user.setPassword(passwordEncoder.encode(hashedPassword));
 
         return UserResponse.from(user);
     }
