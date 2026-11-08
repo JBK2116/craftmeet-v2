@@ -9,4 +9,8 @@ public class UserNotFoundException extends BaseException {
     public UserNotFoundException(UUID userId) {
         super("User not found with id: " + userId.toString(), ErrorCode.RESOURCE_NOT_FOUND);
     }
+
+    public UserNotFoundException(String email) {
+        super("User not found with email: " + email, ErrorCode.RESOURCE_NOT_FOUND);
+    }
 }
