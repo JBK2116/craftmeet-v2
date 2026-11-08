@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import live.craftmeet.user.dto.UserResponse;
 import live.craftmeet.user.exception.UserAlreadyExistsException;
 import live.craftmeet.user.exception.UserNotFoundException;
+import live.craftmeet.user.exception.UserNotVerifiedException;
 import live.craftmeet.user.model.User;
 import live.craftmeet.user.repository.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -127,6 +128,32 @@ public class UserService {
     public UserResponse updatePassword(UUID userId, String hashedPassword) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         user.setPassword(passwordEncoder.encode(hashedPassword));
+
+        return UserResponse.from(user);
+    }
+
+    /**
+     * Authenticates a user by matching the provided password against the stored
+     * password for the account identified by the given email. The account must
+     * also be verified to authenticate successfully.
+     *
+     * @param email    the email address of the user account to authenticate
+     * @param password the raw password to verify against the stored password
+     * @return the authenticated user's account information
+     * @throws UserNotFoundException    if no user exists with the given email or
+     *                                  the password does not match
+     * @throws UserNotVerifiedException if the user account has not been verified
+     */
+    public UserResponse authenticate(String email, String password) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new UserNotFoundException(email);
+        }
+
+        if (!user.isVerified()) {
+            throw new UserNotVerifiedException(user.getEmail());
+        }
 
         return UserResponse.from(user);
     }
