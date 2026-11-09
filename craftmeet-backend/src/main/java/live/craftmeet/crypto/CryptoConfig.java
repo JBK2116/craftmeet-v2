@@ -12,9 +12,6 @@ public class CryptoConfig {
     @Value("${verify.token.secret}")
     private String verifyTokenSecret;
 
-    @Value("${verify.token.expiration}")
-    private long verifyTokenExpiration;
-
     private static final int BCRYPT_STRENGTH = 12;
 
     @Bean
@@ -25,11 +22,6 @@ public class CryptoConfig {
     @Bean
     public String verifyEmailTokenSecret() {
         return verifyTokenSecret;
-    }
-
-    @Bean
-    public long verifyEmailTokenExpiration() {
-        return verifyTokenExpiration;
     }
 
 }

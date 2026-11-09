@@ -1,6 +1,8 @@
 package live.craftmeet.user.service;
 
 import jakarta.transaction.Transactional;
+
+import live.craftmeet.crypto.CryptoService;
 import live.craftmeet.user.dto.UserResponse;
 import live.craftmeet.user.exception.UserAlreadyExistsException;
 import live.craftmeet.user.exception.UserNotFoundException;
@@ -8,7 +10,6 @@ import live.craftmeet.user.exception.UserNotVerifiedException;
 import live.craftmeet.user.model.User;
 import live.craftmeet.user.repository.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -24,11 +25,11 @@ import java.util.UUID;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final CryptoService cryptoService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, CryptoService cryptoService) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.cryptoService = cryptoService;
     }
 
     /**
@@ -51,7 +52,7 @@ public class UserService {
 
         User user = new User();
         user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(password));
+        user.setPassword(cryptoService.hashPassword(password));
         user.setUsername(username);
 
         try {
@@ -127,7 +128,7 @@ public class UserService {
     @Transactional
     public UserResponse updatePassword(UUID userId, String hashedPassword) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-        user.setPassword(passwordEncoder.encode(hashedPassword));
+        user.setPassword(cryptoService.hashPassword(hashedPassword));
 
         return UserResponse.from(user);
     }
@@ -147,7 +148,7 @@ public class UserService {
     public UserResponse authenticate(String email, String password) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        if (cryptoService.checkPassword(password, user.getPassword())) {
             throw new UserNotFoundException(email);
         }
 
