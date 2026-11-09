@@ -46,13 +46,33 @@ public class CryptoService {
     }
 
     /**
+     * Generates a cryptographically secure random token for use in
+     * email-verification links.
+     *
+     * <p>
+     * Produces 32 random bytes (256 bits of entropy) from
+     * {@link java.security.SecureRandom} and encodes them as URL-safe Base64
+     * without padding, so the result can be embedded directly in a URL.
+     * </p>
+     *
+     * @return a URL-safe, unpadded Base64 string representing the random token
+     */
+    public String generateRawToken() {
+        byte[] randomBytes = new byte[32];
+        new java.security.SecureRandom().nextBytes(randomBytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
+    }
+
+    /**
      * Hashes a raw email-verification token using HMAC-SHA256 keyed with the
      * configured token secret.
      *
-     * <p>The secret is stored Base64-encoded and decoded here. The resulting hash
+     * <p>
+     * The secret is stored Base64-encoded and decoded here. The resulting hash
      * is returned Base64-encoded so it can be persisted and later compared without
      * exposing the raw token. A keyed hash (rather than a plain digest) ensures the
-     * stored hashes cannot be brute-forced from the database alone.</p>
+     * stored hashes cannot be brute-forced from the database alone.
+     * </p>
      *
      * @param rawToken the plaintext verification token to hash
      * @return the Base64-encoded HMAC-SHA256 hash of the token
