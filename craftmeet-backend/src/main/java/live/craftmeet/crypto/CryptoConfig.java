@@ -9,19 +9,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class CryptoConfig {
 
-    @Value("${verify.token.secret}")
-    private String verifyTokenSecret;
-
     private static final int BCRYPT_STRENGTH = 12;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(BCRYPT_STRENGTH);
-    }
-
-    @Bean
-    public String verifyEmailTokenSecret() {
-        return verifyTokenSecret;
     }
 
 }

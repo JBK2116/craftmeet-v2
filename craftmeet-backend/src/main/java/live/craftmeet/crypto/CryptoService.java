@@ -2,7 +2,6 @@ package live.craftmeet.crypto;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
@@ -14,12 +13,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CryptoService {
-    private final String verifyEmailTokenSecret;
     private final PasswordEncoder passwordEncoder;
 
-    public CryptoService(String verifyEmailTokenSecret,
-            PasswordEncoder passwordEncoder) {
-        this.verifyEmailTokenSecret = verifyEmailTokenSecret;
+    public CryptoService(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -64,22 +60,24 @@ public class CryptoService {
     }
 
     /**
-     * Hashes a raw email-verification token using HMAC-SHA256 keyed with the
-     * configured token secret.
+     * Hashes a raw token using HMAC-SHA256 keyed with the provided secret.
      *
      * <p>
-     * The secret is stored Base64-encoded and decoded here. The resulting hash
-     * is returned Base64-encoded so it can be persisted and later compared without
-     * exposing the raw token. A keyed hash (rather than a plain digest) ensures the
-     * stored hashes cannot be brute-forced from the database alone.
+     * Used for both refresh tokens and email-verification tokens; each token type
+     * uses its own secret. The secret is stored Base64-encoded and decoded here.
+     * The resulting hash is returned Base64-encoded so it can be persisted and
+     * later compared without exposing the raw token. A keyed hash (rather than a
+     * plain digest) ensures the stored hashes cannot be brute-forced from the
+     * database alone.
      * </p>
      *
-     * @param rawToken the plaintext verification token to hash
+     * @param rawToken the plaintext token to hash
+     * @param secret   the Base64-encoded secret key used to key the HMAC
      * @return the Base64-encoded HMAC-SHA256 hash of the token
      */
-    public String hashVerifyEmailToken(String rawToken) {
+    public String hashToken(String rawToken, String secret) {
         try {
-            byte[] secretBytes = Base64.getDecoder().decode(verifyEmailTokenSecret);
+            byte[] secretBytes = Base64.getDecoder().decode(secret);
 
             Mac mac = Mac.getInstance("HmacSHA256");
             SecretKeySpec secretKeySpec = new SecretKeySpec(secretBytes, "HmacSHA256");
@@ -91,20 +89,6 @@ public class CryptoService {
         } catch (NoSuchAlgorithmException | InvalidKeyException | IllegalArgumentException e) {
             throw new RuntimeException("Failed to calculate HMAC-SHA256", e);
         }
-    }
-
-    /**
-     * Verifies a raw email-verification token against a stored hash using a
-     * constant-time comparison.
-     *
-     * @param rawToken    the plaintext token to verify
-     * @param hashedToken the stored hash to compare against
-     * @return {@code true} if the token matches, otherwise {@code false}
-     */
-    public boolean checkVerifyEmailToken(String rawToken, String hashedToken) {
-        String hashedRawToken = hashVerifyEmailToken(rawToken);
-        return MessageDigest.isEqual(hashedRawToken.getBytes(StandardCharsets.UTF_8),
-                hashedToken.getBytes(StandardCharsets.UTF_8));
     }
 
 }
