@@ -1,5 +1,6 @@
 package live.craftmeet.user.service;
 
+import live.craftmeet.crypto.CryptoService;
 import live.craftmeet.user.dto.UserResponse;
 import live.craftmeet.user.exception.UserAlreadyExistsException;
 import live.craftmeet.user.exception.UserNotFoundException;
@@ -13,7 +14,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for {@link UserService}, using mocked repository and encoder.
+ * Unit tests for {@link UserService}, using mocked repository and crypto service.
  */
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -41,13 +41,13 @@ class UserServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
+    private CryptoService cryptoService;
 
     private UserService userService;
 
     @BeforeEach
     void setUp() {
-        userService = new UserService(userRepository, passwordEncoder);
+        userService = new UserService(userRepository, cryptoService);
     }
 
     private User user(String email, String username, String password, boolean verified) {
@@ -62,7 +62,7 @@ class UserServiceTest {
     @Test
     void createUser_encodesPasswordAndSaves() {
         when(userRepository.existsByEmail(EMAIL)).thenReturn(false);
-        when(passwordEncoder.encode(RAW_PASSWORD)).thenReturn(ENCODED_PASSWORD);
+        when(cryptoService.hashPassword(RAW_PASSWORD)).thenReturn(ENCODED_PASSWORD);
         when(userRepository.saveAndFlush(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         UserResponse response = userService.createUser(EMAIL, RAW_PASSWORD, USERNAME);
@@ -77,7 +77,7 @@ class UserServiceTest {
         assertThat(saved.getUsername()).isEqualTo(USERNAME);
         assertThat(saved.getPassword()).isEqualTo(ENCODED_PASSWORD);
 
-        verify(passwordEncoder).encode(RAW_PASSWORD);
+        verify(cryptoService).hashPassword(RAW_PASSWORD);
     }
 
     @Test
@@ -91,7 +91,7 @@ class UserServiceTest {
     @Test
     void createUser_throwsWhenUsernameAlreadyTaken() {
         when(userRepository.existsByEmail(EMAIL)).thenReturn(false);
-        when(passwordEncoder.encode(RAW_PASSWORD)).thenReturn(ENCODED_PASSWORD);
+        when(cryptoService.hashPassword(RAW_PASSWORD)).thenReturn(ENCODED_PASSWORD);
         when(userRepository.saveAndFlush(any(User.class)))
                 .thenThrow(new DataIntegrityViolationException("duplicate username"));
 
@@ -148,13 +148,13 @@ class UserServiceTest {
     void updatePassword_encodesAndUpdates() {
         User existing = user(EMAIL, USERNAME, "oldEncoded", true);
         when(userRepository.findById(USER_ID)).thenReturn(Optional.of(existing));
-        when(passwordEncoder.encode(RAW_PASSWORD)).thenReturn(ENCODED_PASSWORD);
+        when(cryptoService.hashPassword(RAW_PASSWORD)).thenReturn(ENCODED_PASSWORD);
 
         UserResponse response = userService.updatePassword(USER_ID, RAW_PASSWORD);
 
         assertThat(existing.getPassword()).isEqualTo(ENCODED_PASSWORD);
         assertThat(response.email()).isEqualTo(EMAIL);
-        verify(passwordEncoder).encode(RAW_PASSWORD);
+        verify(cryptoService).hashPassword(RAW_PASSWORD);
     }
 
     @Test
@@ -169,7 +169,7 @@ class UserServiceTest {
     void authenticate_returnsResponseWhenCredentialsValid() {
         User existing = user(EMAIL, USERNAME, ENCODED_PASSWORD, true);
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(existing));
-        when(passwordEncoder.matches(RAW_PASSWORD, ENCODED_PASSWORD)).thenReturn(true);
+        when(cryptoService.checkPassword(RAW_PASSWORD, ENCODED_PASSWORD)).thenReturn(true);
 
         UserResponse response = userService.authenticate(EMAIL, RAW_PASSWORD);
 
@@ -189,7 +189,7 @@ class UserServiceTest {
     void authenticate_throwsWhenPasswordDoesNotMatch() {
         User existing = user(EMAIL, USERNAME, ENCODED_PASSWORD, true);
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(existing));
-        when(passwordEncoder.matches(RAW_PASSWORD, ENCODED_PASSWORD)).thenReturn(false);
+        when(cryptoService.checkPassword(RAW_PASSWORD, ENCODED_PASSWORD)).thenReturn(false);
 
         assertThatThrownBy(() -> userService.authenticate(EMAIL, RAW_PASSWORD))
                 .isInstanceOf(UserNotFoundException.class);
@@ -199,7 +199,7 @@ class UserServiceTest {
     void authenticate_throwsWhenUserNotVerified() {
         User existing = user(EMAIL, USERNAME, ENCODED_PASSWORD, false);
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(existing));
-        when(passwordEncoder.matches(RAW_PASSWORD, ENCODED_PASSWORD)).thenReturn(true);
+        when(cryptoService.checkPassword(RAW_PASSWORD, ENCODED_PASSWORD)).thenReturn(true);
 
         assertThatThrownBy(() -> userService.authenticate(EMAIL, RAW_PASSWORD))
                 .isInstanceOf(UserNotVerifiedException.class);

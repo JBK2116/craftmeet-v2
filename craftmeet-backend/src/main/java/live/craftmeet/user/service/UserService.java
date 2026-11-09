@@ -148,7 +148,7 @@ public class UserService {
     public UserResponse authenticate(String email, String password) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
 
-        if (cryptoService.checkPassword(password, user.getPassword())) {
+        if (!cryptoService.checkPassword(password, user.getPassword())) {
             throw new UserNotFoundException(email);
         }
 
