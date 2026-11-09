@@ -8,6 +8,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import live.craftmeet.crypto.HashingConfig;
+
 class HashingConfigTest {
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
