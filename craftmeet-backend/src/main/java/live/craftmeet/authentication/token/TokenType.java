@@ -8,7 +8,8 @@ public enum TokenType {
      * Represents an access token and the type value stored in its JWT claim.
      */
     ACCESS("refresh"),
-    VERIFY_EMAIL("verify_email");
+    VERIFY_EMAIL("verify_email"),
+    RESET_PASSWORD("reset_password");
 
     /**
      * String value used when the token type is written to a JWT claim.
