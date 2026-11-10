@@ -3,12 +3,13 @@ package live.craftmeet.authentication.config;
 import lombok.Getter;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 /**
- * Defines the categories of JSON Web Tokens supported by the authentication system.
- * The categories distinguish tokens intended for access from tokens intended for refresh.
+ * Defines the categories of JSON Web Tokens supported by the authentication
+ * system.
+ * The categories distinguish tokens intended for access from tokens intended
+ * for refresh.
  */
 @Getter
 public enum JwtType {
@@ -31,9 +32,11 @@ public enum JwtType {
     /**
      * Resolves the JwtType matching the supplied token type string.
      *
-     * @param jwtType the token type string to resolve; must not be null and must correspond to a supported token type
+     * @param jwtType the token type string to resolve; must not be null and must
+     *                correspond to a supported token type
      * @return the JwtType matching the supplied token type string
-     * @throws IllegalArgumentException if jwtType is null or does not match a supported token type
+     * @throws IllegalArgumentException if jwtType is null or does not match a
+     *                                  supported token type
      */
     public static JwtType fromString(String jwtType) {
         if (jwtType == null) {
