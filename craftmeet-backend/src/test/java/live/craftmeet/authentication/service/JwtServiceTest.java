@@ -2,7 +2,7 @@ package live.craftmeet.authentication.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.JwtException;
+import live.craftmeet.authentication.jwt.InvalidJwtException;
 import live.craftmeet.authentication.jwt.JwtConfig;
 import live.craftmeet.authentication.jwt.JwtType;
 import live.craftmeet.user.repository.UserRepository;
@@ -86,8 +86,8 @@ class JwtServiceTest {
         String token = jwtService.generate(USER_ID, JwtType.ACCESS, null);
 
         assertThatThrownBy(() -> jwtService.validate(token, JwtType.REFRESH))
-                .isInstanceOf(JwtException.class)
-                .hasMessageContaining("invalid jwt token");
+                .isInstanceOf(InvalidJwtException.class)
+                .hasMessage("Invalid refresh_token token");
     }
 
     @Test
@@ -97,14 +97,14 @@ class JwtServiceTest {
         String token = jwtService.generate(unknownUserId, JwtType.ACCESS, null);
 
         assertThatThrownBy(() -> jwtService.validate(token, JwtType.ACCESS))
-                .isInstanceOf(JwtException.class)
-                .hasMessageContaining("no existing user found");
+                .isInstanceOf(InvalidJwtException.class)
+                .hasMessage("Invalid access_token token");
     }
 
     @Test
     void validate_rejectsMalformedToken() {
         assertThatThrownBy(() -> jwtService.validate("not-a-jwt", JwtType.ACCESS))
-                .isInstanceOf(JwtException.class)
-                .hasMessageContaining("invalid jwt token");
+                .isInstanceOf(InvalidJwtException.class)
+                .hasMessage("Invalid access_token token");
     }
 }
