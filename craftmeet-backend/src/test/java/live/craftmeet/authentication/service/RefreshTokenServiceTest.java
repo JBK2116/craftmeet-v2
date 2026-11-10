@@ -32,10 +32,10 @@ class RefreshTokenServiceTest {
     }
 
     @Test
-    void create_clearsExistingTokensAndPersistsNewJti() {
+    void generate_clearsExistingTokensAndPersistsNewJti() {
         when(refreshTokenRepository.save(any(RefreshToken.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        UUID result = refreshTokenService.create(USER_ID);
+        UUID result = refreshTokenService.generate(USER_ID);
 
         assertThat(result).isNotNull();
         verify(refreshTokenRepository).deleteByUserId(USER_ID);

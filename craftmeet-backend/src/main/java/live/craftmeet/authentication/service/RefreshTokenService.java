@@ -24,16 +24,16 @@ public class RefreshTokenService {
     }
 
     /**
-     * Creates a new refresh token for the user identified by the given user ID.
+     * Generates a new refresh token for the user identified by the given user ID.
      * Any existing refresh tokens associated with the user are removed before
      * a new token identifier is generated and persisted.
      *
      * @param userId the identifier of the user for whom the refresh token is
-     *               created
+     *               generated
      * @return the generated identifier of the newly created refresh token
      */
     @Transactional
-    public UUID create(UUID userId) {
+    public UUID generate(UUID userId) {
         clear(userId);
 
         UUID jti = UUID.randomUUID();
