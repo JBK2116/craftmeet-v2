@@ -1,4 +1,4 @@
-package live.craftmeet.authentication.config;
+package live.craftmeet.authentication.jwt;
 
 import lombok.Getter;
 

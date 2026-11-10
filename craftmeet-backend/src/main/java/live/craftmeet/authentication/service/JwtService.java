@@ -1,8 +1,8 @@
 package live.craftmeet.authentication.service;
 
 import io.jsonwebtoken.*;
-import live.craftmeet.authentication.config.JwtConfig;
-import live.craftmeet.authentication.config.JwtType;
+import live.craftmeet.authentication.jwt.JwtConfig;
+import live.craftmeet.authentication.jwt.JwtType;
 import live.craftmeet.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 

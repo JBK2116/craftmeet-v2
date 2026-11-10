@@ -1,6 +1,7 @@
 package live.craftmeet.authentication.config;
 
 import io.jsonwebtoken.security.WeakKeyException;
+import live.craftmeet.authentication.jwt.JwtConfig;
 import org.junit.jupiter.api.Test;
 
 import java.util.Base64;

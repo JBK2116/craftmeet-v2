@@ -1,4 +1,4 @@
-package live.craftmeet.authentication.config;
+package live.craftmeet.authentication.jwt;
 
 import io.jsonwebtoken.security.Keys;
 import org.springframework.boot.context.properties.ConfigurationProperties;
