@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import live.craftmeet.crypto.CryptoService;
 import live.craftmeet.user.dto.UserResponse;
 import live.craftmeet.user.exception.UserAlreadyExistsException;
+import live.craftmeet.user.exception.UserInvalidCredentialsException;
 import live.craftmeet.user.exception.UserNotFoundException;
 import live.craftmeet.user.exception.UserNotVerifiedException;
 import live.craftmeet.user.model.User;
@@ -141,15 +142,17 @@ public class UserService {
      * @param email    the email address of the user account to authenticate
      * @param password the raw password to verify against the stored password
      * @return the authenticated user's account information
-     * @throws UserNotFoundException    if no user exists with the given email or
-     *                                  the password does not match
-     * @throws UserNotVerifiedException if the user account has not been verified
+     * @throws UserNotFoundException           if no user exists with the given
+     *                                         email
+     * @throws UserInvalidCredentialsException if the password does not match
+     * @throws UserNotVerifiedException        if the user account has not been
+     *                                         verified
      */
     public UserResponse authenticate(String email, String password) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
 
         if (!cryptoService.checkPassword(password, user.getPassword())) {
-            throw new UserNotFoundException(email);
+            throw new UserInvalidCredentialsException();
         }
 
         if (!user.isVerified()) {

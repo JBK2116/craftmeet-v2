@@ -3,6 +3,7 @@ package live.craftmeet.user.service;
 import live.craftmeet.crypto.CryptoService;
 import live.craftmeet.user.dto.UserResponse;
 import live.craftmeet.user.exception.UserAlreadyExistsException;
+import live.craftmeet.user.exception.UserInvalidCredentialsException;
 import live.craftmeet.user.exception.UserNotFoundException;
 import live.craftmeet.user.exception.UserNotVerifiedException;
 import live.craftmeet.user.model.User;
@@ -192,7 +193,7 @@ class UserServiceTest {
         when(cryptoService.checkPassword(RAW_PASSWORD, ENCODED_PASSWORD)).thenReturn(false);
 
         assertThatThrownBy(() -> userService.authenticate(EMAIL, RAW_PASSWORD))
-                .isInstanceOf(UserNotFoundException.class);
+                .isInstanceOf(UserInvalidCredentialsException.class);
     }
 
     @Test
