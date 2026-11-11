@@ -5,19 +5,25 @@ import live.craftmeet.authentication.jwt.InvalidJwtException;
 import live.craftmeet.authentication.jwt.JwtConfig;
 import live.craftmeet.authentication.jwt.JwtType;
 import live.craftmeet.user.repository.UserRepository;
+
+import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class JwtService {
-
+    private final Environment environment;
     private final JwtConfig jwtProperties;
     private final UserRepository userRepository;
 
-    public JwtService(JwtConfig jwtProperties, UserRepository userRepository) {
+    public JwtService(Environment environment, JwtConfig jwtProperties, UserRepository userRepository) {
+        this.environment = environment;
         this.jwtProperties = jwtProperties;
         this.userRepository = userRepository;
     }
@@ -109,5 +115,46 @@ public class JwtService {
         } catch (JwtException | IllegalArgumentException e) {
             throw new InvalidJwtException(jwtType);
         }
+    }
+
+    /**
+     * Builds an HTTP cookie carrying the given signed JWT.
+     * The cookie name and lifetime depend on the token type: access tokens use
+     * the configured access-token expiration, while refresh tokens use the
+     * refresh-token expiration. The resulting cookie is HTTP-only, secure,
+     * SameSite=Strict, and scoped to the root path.
+     *
+     * @param jwt     the signed compact JWT value to store in the cookie
+     * @param jwtType the type of token, determining the cookie name and lifetime
+     * @return the constructed response cookie
+     */
+    public ResponseCookie buildToken(String jwt, JwtType jwtType) {
+        if (jwtType.getType().equals(JwtType.ACCESS.getType())) {
+            return ResponseCookie.from(JwtType.ACCESS.getType(), jwt)
+                    .httpOnly(true)
+                    .secure(!isDev())
+                    .path("/")
+                    .maxAge(TimeUnit.MILLISECONDS.toSeconds(jwtProperties.accessTokenExpiration()))
+                    .sameSite("Strict")
+                    .build();
+        } else {
+            return ResponseCookie.from(JwtType.REFRESH.getType(), jwt)
+                    .httpOnly(true)
+                    .secure(!isDev())
+                    .path("/")
+                    .maxAge(TimeUnit.MILLISECONDS.toSeconds(jwtProperties.refreshTokenExpiration()))
+                    .sameSite("Strict")
+                    .build();
+        }
+
+    }
+
+    /**
+     * Determines whether the application is running under the development profile.
+     *
+     * @return {@code true} when {@code dev} is among the active Spring profiles
+     */
+    private boolean isDev() {
+        return Arrays.asList(environment.getActiveProfiles()).contains("dev");
     }
 }
