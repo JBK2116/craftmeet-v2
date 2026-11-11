@@ -1,6 +1,7 @@
 package live.craftmeet.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import live.craftmeet.authentication.dto.SendVerifyEmailRequest;
 import live.craftmeet.authentication.dto.SignupRequest;
 import live.craftmeet.authentication.repository.VerifyEmailTokenRepository;
 import live.craftmeet.crypto.CryptoService;
@@ -69,7 +70,9 @@ class SendVerificationEmailE2ETest {
     void sendVerificationEmail_createsTokenAndSendsEmail() throws Exception {
         User user = createUser(EMAIL, false);
 
-        mockMvc.perform(post("/verify").param("email", EMAIL))
+        mockMvc.perform(post("/verify")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(sendVerifyEmailJson(EMAIL)))
                 .andExpect(status().isOk());
 
         assertThat(verifyEmailTokenRepository.findByUserId(user.getId())).isPresent();
@@ -78,7 +81,9 @@ class SendVerificationEmailE2ETest {
 
     @Test
     void sendVerificationEmail_rejectsUnknownEmail() throws Exception {
-        mockMvc.perform(post("/verify").param("email", "unknown@example.com"))
+        mockMvc.perform(post("/verify")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(sendVerifyEmailJson("unknown@example.com")))
                 .andExpect(status().isNotFound());
     }
 
@@ -86,7 +91,9 @@ class SendVerificationEmailE2ETest {
     void sendVerificationEmail_rejectsVerifiedUser() throws Exception {
         createUser(EMAIL, true);
 
-        mockMvc.perform(post("/verify").param("email", EMAIL))
+        mockMvc.perform(post("/verify")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(sendVerifyEmailJson(EMAIL)))
                 .andExpect(status().isConflict());
     }
 
@@ -97,7 +104,9 @@ class SendVerificationEmailE2ETest {
                 .content(signupJson()))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(post("/verify").param("email", EMAIL))
+        mockMvc.perform(post("/verify")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(sendVerifyEmailJson(EMAIL)))
                 .andExpect(status().isTooManyRequests());
     }
 
@@ -115,5 +124,9 @@ class SendVerificationEmailE2ETest {
 
     private String signupJson() throws Exception {
         return objectMapper.writeValueAsString(new SignupRequest(USERNAME, PASSWORD, EMAIL));
+    }
+
+    private String sendVerifyEmailJson(String email) throws Exception {
+        return objectMapper.writeValueAsString(new SendVerifyEmailRequest(email));
     }
 }
