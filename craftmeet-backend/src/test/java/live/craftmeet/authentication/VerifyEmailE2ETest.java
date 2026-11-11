@@ -2,6 +2,7 @@ package live.craftmeet.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import live.craftmeet.authentication.dto.SignupRequest;
+import live.craftmeet.authentication.repository.VerifyEmailTokenRepository;
 import live.craftmeet.email.EmailService;
 import live.craftmeet.user.model.User;
 import live.craftmeet.user.repository.UserRepository;
@@ -53,11 +54,14 @@ class VerifyEmailE2ETest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private VerifyEmailTokenRepository verifyEmailTokenRepository;
+
     @MockitoBean
     private EmailService emailService;
 
     @Test
-    void verifyEmail_marksUserVerified() throws Exception {
+    void verifyEmail_marksUserVerifiedAndDeletesToken() throws Exception {
         String token = signupAndCaptureToken();
 
         mockMvc.perform(get("/verify").param("token", token))
@@ -66,6 +70,7 @@ class VerifyEmailE2ETest {
         User user = userRepository.findByEmail(EMAIL).orElseThrow();
         assertThat(user.isVerified()).isTrue();
         assertThat(user.getVerifiedAt()).isNotNull();
+        assertThat(verifyEmailTokenRepository.findByUserId(user.getId())).isEmpty();
     }
 
     @Test
@@ -75,14 +80,14 @@ class VerifyEmailE2ETest {
     }
 
     @Test
-    void verifyEmail_rejectsAlreadyVerifiedUser() throws Exception {
+    void verifyEmail_rejectsReusedToken() throws Exception {
         String token = signupAndCaptureToken();
 
         mockMvc.perform(get("/verify").param("token", token))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/verify").param("token", token))
-                .andExpect(status().isConflict());
+                .andExpect(status().isUnauthorized());
     }
 
     private String signupAndCaptureToken() throws Exception {
