@@ -1,0 +1,39 @@
+package live.craftmeet.authentication.service;
+
+import jakarta.transaction.Transactional;
+
+import org.springframework.stereotype.Service;
+
+import live.craftmeet.authentication.dto.SignupRequest;
+import live.craftmeet.email.EmailService;
+import live.craftmeet.user.dto.UserResponse;
+import live.craftmeet.user.service.UserService;
+
+@Service
+public class AuthService {
+
+    private final UserService userService;
+    private final JwtService jwtService;
+    private final VerifyEmailTokenService verifyEmailTokenService;
+    private final RefreshTokenService refreshTokenService;
+    private final EmailService emailService;
+
+    public AuthService(UserService userService, JwtService jwtService, VerifyEmailTokenService verifyEmailTokenService,
+            RefreshTokenService refreshTokenService,
+            EmailService emailService) {
+        this.userService = userService;
+        this.jwtService = jwtService;
+        this.verifyEmailTokenService = verifyEmailTokenService;
+        this.refreshTokenService = refreshTokenService;
+        this.emailService = emailService;
+    }
+
+    @Transactional
+    public void signup(SignupRequest signupRequest) {
+        UserResponse userResponse = userService.createUser(signupRequest.email(), signupRequest.password(),
+                signupRequest.username());
+        String rawToken = verifyEmailTokenService.generate(userResponse.email());
+        emailService.sendVerificationEmail(userResponse.email(), rawToken);
+    }
+
+}
