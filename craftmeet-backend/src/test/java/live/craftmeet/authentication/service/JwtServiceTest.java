@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.env.Environment;
 
 import java.util.Base64;
 import java.util.UUID;
@@ -29,13 +30,16 @@ class JwtServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private Environment environment;
+
     private JwtConfig jwtConfig;
     private JwtService jwtService;
 
     @BeforeEach
     void setUp() {
         jwtConfig = new JwtConfig(ISSUER, SECRET, 60_000L, 900_000L, null);
-        jwtService = new JwtService(jwtConfig, userRepository);
+        jwtService = new JwtService(environment, jwtConfig, userRepository);
     }
 
     @Test

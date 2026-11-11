@@ -1,10 +1,15 @@
 package live.craftmeet.authentication.service;
 
+import java.util.UUID;
+
 import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
+import live.craftmeet.authentication.dto.LoginRequest;
+import live.craftmeet.authentication.dto.LoginResponse;
 import live.craftmeet.authentication.dto.SignupRequest;
+import live.craftmeet.authentication.jwt.JwtType;
 import live.craftmeet.email.EmailService;
 import live.craftmeet.user.dto.UserResponse;
 import live.craftmeet.user.service.UserService;
@@ -39,6 +44,16 @@ public class AuthService {
     @Transactional
     public void verifyEmail(String rawToken) {
         verifyEmailTokenService.validate(rawToken);
+    }
+
+    @Transactional
+    public LoginResponse login(LoginRequest loginRequest) {
+        UserResponse userResponse = userService.authenticate(loginRequest.email(), loginRequest.password());
+        UUID jti = refreshTokenService.generate(userResponse.id());
+        String accessJwt = jwtService.generate(userResponse.id(), JwtType.ACCESS, null);
+        String refreshJwt = jwtService.generate(userResponse.id(), JwtType.REFRESH, jti);
+        return new LoginResponse(userResponse, jwtService.buildToken(accessJwt, JwtType.ACCESS),
+                jwtService.buildToken(refreshJwt, JwtType.REFRESH));
     }
 
 }
