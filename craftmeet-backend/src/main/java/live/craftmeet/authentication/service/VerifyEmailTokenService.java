@@ -133,6 +133,7 @@ public class VerifyEmailTokenService {
         user.setVerified(true);
         user.setVerifiedAt(Instant.now());
         userRepository.save(user);
+        verifyEmailRepository.delete(token);
     }
 
     /**
