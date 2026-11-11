@@ -18,8 +18,6 @@ import live.craftmeet.user.exception.UserNotFoundException;
 import live.craftmeet.user.model.User;
 import live.craftmeet.user.repository.UserRepository;
 
-// TODO: This service should also inject a emailservice to send the verification token to the user.
-
 /**
  * Service responsible for managing email verification tokens.
  * Generates verification tokens for users whose email is not yet verified,
