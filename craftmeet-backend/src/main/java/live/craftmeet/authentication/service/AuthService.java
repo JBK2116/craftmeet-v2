@@ -36,4 +36,9 @@ public class AuthService {
         emailService.sendVerificationEmail(userResponse.email(), rawToken);
     }
 
+    @Transactional
+    public void verifyEmail(String rawToken) {
+        verifyEmailTokenService.validate(rawToken);
+    }
+
 }
