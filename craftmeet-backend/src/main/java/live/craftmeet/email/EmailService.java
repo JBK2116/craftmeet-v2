@@ -9,9 +9,11 @@ import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Service responsible for sending transactional emails through SendGrid.
@@ -27,17 +29,19 @@ public class EmailService {
     private static final String LOGO_SVG = """
             <svg width="34" height="34" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Craftmeet" style="display:block;"><path fill-rule="evenodd" fill="#005153" d="M 18 5 L 76 5 Q 88 5 88 17 L 88 61 Q 88 73 76 73 L 36 73 L 19 90 L 25 73 L 18 73 Q 6 73 6 61 L 6 17 Q 6 5 18 5 Z M 18 14 L 76 14 Q 80 14 80 18 L 80 32 Q 80 36 76 36 L 18 36 Q 14 36 14 32 L 14 18 Q 14 14 18 14 Z M 18 41 L 40 41 Q 44 41 44 45 L 44 63 Q 44 67 40 67 L 18 67 Q 14 67 14 63 L 14 45 Q 14 41 18 41 Z M 54 41 L 76 41 Q 80 41 80 45 L 80 63 Q 80 67 76 67 L 54 67 Q 50 67 50 63 L 50 45 Q 50 41 54 41 Z M 65 48 L 67 52 L 71 54 L 67 56 L 65 60 L 63 56 L 59 54 L 63 52 Z"/></svg>""";
 
+    private final Environment environment;
     private final String sendgridApiKey;
     private final String sendgridFromEmail;
     private final String sendgridFromName;
     private final long verifyTokenExpiration;
     private final long resetTokenExpiration;
 
-    public EmailService(@Value("${sendgrid.api-key}") String sendgridApiKey,
+    public EmailService(Environment environment, @Value("${sendgrid.api-key}") String sendgridApiKey,
             @Value("${sendgrid.from-email}") String sendgridFromEmail,
             @Value("${sendgrid.from-name}") String sendgridFromName,
             @Value("${verify.token.expiration}") long verifyTokenExpiration,
             @Value("${reset.token.expiration}") long resetTokenExpiration) {
+        this.environment = environment;
         this.sendgridApiKey = sendgridApiKey;
         this.sendgridFromEmail = sendgridFromEmail;
         this.sendgridFromName = sendgridFromName;
@@ -51,9 +55,9 @@ public class EmailService {
      * @param toEmail          the recipient's email address
      * @param verificationLink the verification link to embed in the email
      */
-    public void sendVerificationEmail(String toEmail, String verificationLink) {
+    public void sendVerificationEmail(String toEmail, String token) {
         long expiryHours = verifyTokenExpiration / 3_600_000L;
-        String html = buildVerificationHtml(verificationLink, expiryHours);
+        String html = buildVerificationHtml(buildVerificationLink(token), expiryHours);
         send(toEmail, "Verify your Craftmeet account", html);
     }
 
@@ -63,9 +67,9 @@ public class EmailService {
      * @param toEmail   the recipient's email address
      * @param resetLink the password reset link to embed in the email
      */
-    public void sendResetPasswordEmail(String toEmail, String resetLink) {
+    public void sendResetPasswordEmail(String toEmail, String token) {
         long expiryMinutes = resetTokenExpiration / 60_000L;
-        String html = buildResetPasswordHtml(resetLink, expiryMinutes);
+        String html = buildResetPasswordHtml(buildVerificationLink(token), expiryMinutes);
         send(toEmail, "Reset your Craftmeet password", html);
     }
 
@@ -91,6 +95,30 @@ public class EmailService {
             log.error("Failed to send email to {}", toEmail, e);
             throw new SendEmailException("Failed to send email to " + toEmail);
         }
+    }
+
+    /**
+     * Builds the email-verification link for the given token, using the
+     * environment-appropriate frontend base URL.
+     *
+     * @param token the raw verification token to embed in the link
+     * @return the full verification URL
+     */
+    public String buildVerificationLink(String token) {
+        String baseUrl = isDev() ? "http://localhost:5173" : "https://craftmeet.live";
+        return baseUrl + "/verify?token=" + token;
+    }
+
+    /**
+     * Builds the password-reset link for the given token, using the
+     * environment-appropriate frontend base URL.
+     *
+     * @param token the raw reset token to embed in the link
+     * @return the full password reset URL
+     */
+    public String buildResetPasswordLink(String token) {
+        String baseUrl = isDev() ? "http://localhost:5173" : "https://craftmeet.live";
+        return baseUrl + "/reset-password?token=" + token;
     }
 
     private String buildVerificationHtml(String emailLink, long expiryHours) {
@@ -229,6 +257,15 @@ public class EmailService {
                 .replace("{logo_svg}", LOGO_SVG)
                 .replace("{email_link}", emailLink)
                 .replace("{expiry_minutes}", String.valueOf(expiryMinutes));
+    }
+
+    /**
+     * Determines whether the application is running under the development profile.
+     *
+     * @return {@code true} when {@code dev} is among the active Spring profiles
+     */
+    private boolean isDev() {
+        return Arrays.asList(environment.getActiveProfiles()).contains("dev");
     }
 
 }
