@@ -6,6 +6,7 @@ import live.craftmeet.authentication.jwt.JwtConfig;
 import live.craftmeet.authentication.jwt.JwtType;
 import live.craftmeet.user.repository.UserRepository;
 
+import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
@@ -135,7 +136,7 @@ public class JwtService {
                     .secure(!isDev())
                     .path("/")
                     .maxAge(TimeUnit.MILLISECONDS.toSeconds(jwtProperties.accessTokenExpiration()))
-                    .sameSite("Strict")
+                    .sameSite(SameSite.STRICT.toString())
                     .build();
         } else {
             return ResponseCookie.from(JwtType.REFRESH.getType(), jwt)
@@ -143,7 +144,7 @@ public class JwtService {
                     .secure(!isDev())
                     .path("/")
                     .maxAge(TimeUnit.MILLISECONDS.toSeconds(jwtProperties.refreshTokenExpiration()))
-                    .sameSite("Strict")
+                    .sameSite(SameSite.STRICT.toString())
                     .build();
         }
 
