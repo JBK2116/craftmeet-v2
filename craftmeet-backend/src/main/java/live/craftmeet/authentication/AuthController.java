@@ -36,6 +36,12 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/verify")
+    public ResponseEntity<Void> sendVerificationEmail(@RequestParam(name = "email") String email) {
+        authService.sendVerificationEmail(email);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest loginRequest) {
         LoginResponse loginResponse = authService.login(loginRequest);

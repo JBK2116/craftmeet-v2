@@ -47,6 +47,12 @@ public class AuthService {
     }
 
     @Transactional
+    public void sendVerificationEmail(String email) {
+        String rawToken = verifyEmailTokenService.generate(email);
+        emailService.sendVerificationEmail(email, rawToken);
+    }
+
+    @Transactional
     public LoginResponse login(LoginRequest loginRequest) {
         UserResponse userResponse = userService.authenticate(loginRequest.email(), loginRequest.password());
         UUID jti = refreshTokenService.generate(userResponse.id());
