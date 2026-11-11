@@ -69,7 +69,7 @@ public class EmailService {
      */
     public void sendResetPasswordEmail(String toEmail, String token) {
         long expiryMinutes = resetTokenExpiration / 60_000L;
-        String html = buildResetPasswordHtml(buildVerificationLink(token), expiryMinutes);
+        String html = buildResetPasswordHtml(buildResetPasswordLink(token), expiryMinutes);
         send(toEmail, "Reset your Craftmeet password", html);
     }
 
