@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import live.craftmeet.authentication.dto.LoginRequest;
 import live.craftmeet.authentication.dto.LoginResponse;
+import live.craftmeet.authentication.dto.ResetPasswordRequest;
 import live.craftmeet.authentication.dto.SignupRequest;
 import live.craftmeet.authentication.jwt.JwtType;
 import live.craftmeet.email.EmailService;
@@ -52,6 +53,12 @@ public class AuthService {
     public void sendVerificationEmail(String email) {
         String rawToken = verifyEmailTokenService.generate(email);
         emailService.sendVerificationEmail(email, rawToken);
+    }
+
+    @Transactional
+    public void resetPassword(ResetPasswordRequest resetPasswordRequest, String rawToken) {
+        String email = resetPasswordTokenService.validate(rawToken);
+        userService.updatePassword(email, resetPasswordRequest.newPassword());
     }
 
     @Transactional

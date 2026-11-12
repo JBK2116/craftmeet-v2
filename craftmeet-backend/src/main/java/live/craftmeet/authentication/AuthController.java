@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import live.craftmeet.authentication.dto.LoginRequest;
 import live.craftmeet.authentication.dto.LoginResponse;
+import live.craftmeet.authentication.dto.ResetPasswordRequest;
 import live.craftmeet.authentication.dto.SendResetPasswordEmailRequest;
 import live.craftmeet.authentication.dto.SendVerifyEmailRequest;
 import live.craftmeet.authentication.dto.SignupRequest;
@@ -48,6 +49,13 @@ public class AuthController {
     public ResponseEntity<Void> forgotPassword(
             @Valid @RequestBody SendResetPasswordEmailRequest sendResetPasswordEmailRequest) {
         authService.sendResetPasswordEmail(sendResetPasswordEmailRequest.email());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(
+            @RequestParam(name = "token") String token, @Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
+        authService.resetPassword(resetPasswordRequest, token);
         return ResponseEntity.ok().build();
     }
 

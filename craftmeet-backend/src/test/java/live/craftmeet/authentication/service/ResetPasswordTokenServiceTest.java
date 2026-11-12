@@ -21,7 +21,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -133,8 +132,9 @@ class ResetPasswordTokenServiceTest {
     }
 
     @Test
-    void validate_acceptsValidToken() {
+    void validate_acceptsValidTokenAndDeletesIt() {
         User user = user(true);
+        when(user.getEmail()).thenReturn(EMAIL);
         ResetPasswordToken token = mock(ResetPasswordToken.class);
         when(cryptoService.hashToken(RAW_TOKEN, TOKEN_SECRET)).thenReturn(TOKEN_HASH);
         when(resetPasswordTokenRepository.findByTokenHash(TOKEN_HASH)).thenReturn(Optional.of(token));
@@ -142,9 +142,10 @@ class ResetPasswordTokenServiceTest {
         when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
         when(token.getExpiresAt()).thenReturn(Instant.now().plusMillis(EXPIRATION_MS));
 
-        assertThatCode(() -> resetPasswordTokenService.validate(RAW_TOKEN))
-                .doesNotThrowAnyException();
+        String email = resetPasswordTokenService.validate(RAW_TOKEN);
 
+        assertThat(email).isEqualTo(EMAIL);
+        verify(resetPasswordTokenRepository).delete(token);
         verify(userRepository, never()).save(any());
     }
 
