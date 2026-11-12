@@ -24,6 +24,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -58,13 +59,16 @@ class LoginE2ETest {
     private CryptoService cryptoService;
 
     @Test
-    void login_returnsAccessAndRefreshCookies() throws Exception {
+    void login_returnsUserAndAccessAndRefreshCookies() throws Exception {
         createUser(EMAIL, PASSWORD, true);
 
         MvcResult result = mockMvc.perform(post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(loginJson(EMAIL, PASSWORD)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value(EMAIL))
+                .andExpect(jsonPath("$.username").value(USERNAME))
+                .andExpect(jsonPath("$.verified").value(true))
                 .andReturn();
 
         List<String> cookies = result.getResponse().getHeaders(HttpHeaders.SET_COOKIE);

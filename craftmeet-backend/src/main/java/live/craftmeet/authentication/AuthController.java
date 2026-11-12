@@ -18,6 +18,7 @@ import live.craftmeet.authentication.dto.SendResetPasswordEmailRequest;
 import live.craftmeet.authentication.dto.SendVerifyEmailRequest;
 import live.craftmeet.authentication.dto.SignupRequest;
 import live.craftmeet.authentication.service.AuthService;
+import live.craftmeet.user.dto.UserResponse;
 
 @RestController
 public class AuthController {
@@ -60,12 +61,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<UserResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         LoginResponse loginResponse = authService.login(loginRequest);
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, loginResponse.accessToken().toString())
                 .header(HttpHeaders.SET_COOKIE, loginResponse.refreshToken().toString())
-                .build();
+                .body(loginResponse.user());
     }
 
 }
