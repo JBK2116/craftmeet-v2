@@ -19,17 +19,19 @@ public class AuthService {
 
     private final UserService userService;
     private final JwtService jwtService;
-    private final VerifyEmailTokenService verifyEmailTokenService;
     private final RefreshTokenService refreshTokenService;
+    private final VerifyEmailTokenService verifyEmailTokenService;
+    private final ResetPasswordTokenService resetPasswordTokenService;
     private final EmailService emailService;
 
     public AuthService(UserService userService, JwtService jwtService, VerifyEmailTokenService verifyEmailTokenService,
-            RefreshTokenService refreshTokenService,
+            RefreshTokenService refreshTokenService, ResetPasswordTokenService resetPasswordTokenService,
             EmailService emailService) {
         this.userService = userService;
         this.jwtService = jwtService;
         this.verifyEmailTokenService = verifyEmailTokenService;
         this.refreshTokenService = refreshTokenService;
+        this.resetPasswordTokenService = resetPasswordTokenService;
         this.emailService = emailService;
     }
 
@@ -50,6 +52,12 @@ public class AuthService {
     public void sendVerificationEmail(String email) {
         String rawToken = verifyEmailTokenService.generate(email);
         emailService.sendVerificationEmail(email, rawToken);
+    }
+
+    @Transactional
+    public void sendResetPasswordEmail(String email) {
+        String rawToken = resetPasswordTokenService.generate(email);
+        emailService.sendResetPasswordEmail(email, rawToken);
     }
 
     @Transactional
