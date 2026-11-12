@@ -148,10 +148,10 @@ class UserServiceTest {
     @Test
     void updatePassword_encodesAndUpdates() {
         User existing = user(EMAIL, USERNAME, "oldEncoded", true);
-        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(existing));
+        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(existing));
         when(cryptoService.hashPassword(RAW_PASSWORD)).thenReturn(ENCODED_PASSWORD);
 
-        UserResponse response = userService.updatePassword(USER_ID, RAW_PASSWORD);
+        UserResponse response = userService.updatePassword(EMAIL, RAW_PASSWORD);
 
         assertThat(existing.getPassword()).isEqualTo(ENCODED_PASSWORD);
         assertThat(response.email()).isEqualTo(EMAIL);
@@ -160,9 +160,9 @@ class UserServiceTest {
 
     @Test
     void updatePassword_throwsWhenUserNotFound() {
-        when(userRepository.findById(USER_ID)).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> userService.updatePassword(USER_ID, RAW_PASSWORD))
+        assertThatThrownBy(() -> userService.updatePassword(EMAIL, RAW_PASSWORD))
                 .isInstanceOf(UserNotFoundException.class);
     }
 
