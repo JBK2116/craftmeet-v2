@@ -6,10 +6,13 @@ import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.Claims;
 import live.craftmeet.authentication.dto.LoginRequest;
 import live.craftmeet.authentication.dto.LoginResponse;
+import live.craftmeet.authentication.dto.RefreshResponse;
 import live.craftmeet.authentication.dto.ResetPasswordRequest;
 import live.craftmeet.authentication.dto.SignupRequest;
+import live.craftmeet.authentication.jwt.InvalidJwtException;
 import live.craftmeet.authentication.jwt.JwtType;
 import live.craftmeet.email.EmailService;
 import live.craftmeet.user.dto.UserResponse;
@@ -75,6 +78,22 @@ public class AuthService {
         String refreshJwt = jwtService.generate(userResponse.id(), JwtType.REFRESH, jti);
         return new LoginResponse(userResponse, jwtService.buildToken(accessJwt, JwtType.ACCESS),
                 jwtService.buildToken(refreshJwt, JwtType.REFRESH));
+    }
+
+    @Transactional
+    public RefreshResponse refresh(String refreshToken) {
+        Claims claims = jwtService.validate(refreshToken, JwtType.REFRESH);
+        UUID newJti = UUID.randomUUID();
+        UUID oldJti = UUID.fromString(claims.getId());
+        UUID userId = UUID.fromString(claims.getSubject());
+        if (refreshTokenService.rotate(userId, oldJti, newJti) != 1) {
+            throw new InvalidJwtException(JwtType.REFRESH);
+        }
+        String newAccessJwt = jwtService.generate(userId, JwtType.ACCESS, null);
+        String newRefreshJwt = jwtService.generate(userId, JwtType.REFRESH, newJti);
+        return new RefreshResponse(jwtService.buildToken(newAccessJwt, JwtType.ACCESS),
+                jwtService.buildToken(newRefreshJwt, JwtType.REFRESH));
+
     }
 
 }
