@@ -151,6 +151,36 @@ public class JwtService {
     }
 
     /**
+     * Builds an HTTP cookie that clears the token of the given type on logout.
+     * The cookie carries an empty value and an immediate expiration (a max age of
+     * zero) so the browser discards it, while matching the name, path, and
+     * attributes of the corresponding token cookie. The resulting cookie is
+     * HTTP-only, secure, SameSite=Strict, and scoped to the root path.
+     *
+     * @param jwtType the type of token whose cookie should be cleared
+     * @return the constructed logout cookie
+     */
+    public ResponseCookie buildLogoutToken(JwtType jwtType) {
+        if (jwtType.getType().equals(JwtType.ACCESS.getType())) {
+            return ResponseCookie.from(JwtType.ACCESS.getType(), "")
+                    .httpOnly(true)
+                    .secure(!isDev())
+                    .path("/")
+                    .maxAge(0)
+                    .sameSite(SameSite.STRICT.toString())
+                    .build();
+        } else {
+            return ResponseCookie.from(JwtType.REFRESH.getType(), "")
+                    .httpOnly(true)
+                    .secure(!isDev())
+                    .path("/")
+                    .maxAge(0)
+                    .sameSite(SameSite.STRICT.toString())
+                    .build();
+        }
+    }
+
+    /**
      * Determines whether the application is running under the development profile.
      *
      * @return {@code true} when {@code dev} is among the active Spring profiles

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import live.craftmeet.authentication.dto.LoginRequest;
 import live.craftmeet.authentication.dto.LoginResponse;
+import live.craftmeet.authentication.dto.LogoutResponse;
 import live.craftmeet.authentication.dto.RefreshResponse;
 import live.craftmeet.authentication.dto.ResetPasswordRequest;
 import live.craftmeet.authentication.dto.SendResetPasswordEmailRequest;
@@ -77,6 +78,15 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, refreshResponse.accessToken().toString())
                 .header(HttpHeaders.SET_COOKIE, refreshResponse.refreshToken().toString())
+                .build();
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@CookieValue(name = "refresh_token") String refreshToken) {
+        LogoutResponse logoutResponse = authService.logout(refreshToken);
+        return ResponseEntity.status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, logoutResponse.accessTokenCookie().toString())
+                .header(HttpHeaders.SET_COOKIE, logoutResponse.refreshTokenCookie().toString())
                 .build();
     }
 

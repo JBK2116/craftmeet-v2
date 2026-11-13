@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;
 import live.craftmeet.authentication.dto.LoginRequest;
 import live.craftmeet.authentication.dto.LoginResponse;
+import live.craftmeet.authentication.dto.LogoutResponse;
 import live.craftmeet.authentication.dto.RefreshResponse;
 import live.craftmeet.authentication.dto.ResetPasswordRequest;
 import live.craftmeet.authentication.dto.SignupRequest;
@@ -94,6 +95,19 @@ public class AuthService {
         return new RefreshResponse(jwtService.buildToken(newAccessJwt, JwtType.ACCESS),
                 jwtService.buildToken(newRefreshJwt, JwtType.REFRESH));
 
+    }
+
+    @Transactional
+    public LogoutResponse logout(String refreshToken) {
+        try {
+            Claims claims = jwtService.validate(refreshToken, JwtType.REFRESH);
+            UUID userId = UUID.fromString(claims.getSubject());
+            refreshTokenService.clear(userId);
+        } catch (InvalidJwtException e) {
+            // user is already logged out
+        }
+        return new LogoutResponse(jwtService.buildLogoutToken(JwtType.ACCESS),
+                jwtService.buildLogoutToken(JwtType.REFRESH));
     }
 
 }
