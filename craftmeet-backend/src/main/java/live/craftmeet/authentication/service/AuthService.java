@@ -110,4 +110,11 @@ public class AuthService {
                 jwtService.buildLogoutToken(JwtType.REFRESH));
     }
 
+    @Transactional
+    public UserResponse me(String accessToken) {
+        Claims claims = jwtService.validate(accessToken, JwtType.ACCESS);
+        UUID userId = UUID.fromString(claims.getSubject());
+        return userService.getUser(userId);
+    }
+
 }

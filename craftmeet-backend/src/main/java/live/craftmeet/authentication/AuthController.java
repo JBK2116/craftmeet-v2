@@ -90,4 +90,10 @@ public class AuthController {
                 .build();
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> me(@CookieValue(name = "access_token") String access) {
+        UserResponse userResponse = authService.me(access);
+        return ResponseEntity.status(HttpStatus.OK).body(userResponse);
+    }
+
 }
