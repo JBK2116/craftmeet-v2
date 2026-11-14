@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -26,6 +26,12 @@ export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (window.location.search.includes("error=oauth_failed")) {
+      toast.error("Google sign-in failed. Please try again.");
+    }
+  }, []);
 
   const {
     register,

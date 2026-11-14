@@ -1,6 +1,6 @@
 "use client";
 
-import { toast } from "sonner";
+import { API_BASE_URL } from "@/lib/constants";
 
 function GoogleIcon() {
   return (
@@ -29,7 +29,11 @@ export function GoogleButton({ disabled }: { disabled?: boolean }) {
   return (
     <button
       type="button"
-      onClick={() => toast.info("Google sign-in is coming soon.")}
+      onClick={() => {
+        // Cross-origin navigation to the backend OAuth endpoint (not an internal page).
+        // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+        window.location.href = `${API_BASE_URL}/google`;
+      }}
       disabled={disabled}
       className="flex w-full items-center justify-center gap-3 rounded-lg border border-border bg-secondary px-4 py-2.5 text-sm font-medium text-secondary-foreground transition hover:bg-secondary/80 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
     >
