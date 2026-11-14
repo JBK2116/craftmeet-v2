@@ -22,6 +22,8 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -204,5 +206,63 @@ class UserServiceTest {
 
         assertThatThrownBy(() -> userService.authenticate(EMAIL, RAW_PASSWORD))
                 .isInstanceOf(UserNotVerifiedException.class);
+    }
+
+    @Test
+    void findOrCreateGoogleUser_returnsExistingWhenGoogleIdMatches() {
+        User existing = user("old@example.com", null, null, true);
+        existing.setGoogleId(GOOGLE_ID);
+        when(userRepository.findByGoogleId(GOOGLE_ID)).thenReturn(Optional.of(existing));
+
+        UserResponse response = userService.findOrCreateGoogleUser("new@example.com", GOOGLE_ID);
+
+        assertThat(response.email()).isEqualTo("old@example.com");
+        verify(userRepository, never()).save(any(User.class));
+        verify(userRepository, never()).findByEmail(anyString());
+    }
+
+    @Test
+    void findOrCreateGoogleUser_linksExistingVerifiedUserByEmail() {
+        User existing = user(EMAIL, USERNAME, ENCODED_PASSWORD, true);
+        when(userRepository.findByGoogleId(GOOGLE_ID)).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(existing));
+        when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        UserResponse response = userService.findOrCreateGoogleUser(EMAIL, GOOGLE_ID);
+
+        assertThat(response.email()).isEqualTo(EMAIL);
+        assertThat(existing.getGoogleId()).isEqualTo(GOOGLE_ID);
+        assertThat(existing.isVerified()).isTrue();
+    }
+
+    @Test
+    void findOrCreateGoogleUser_linksAndVerifiesUnverifiedExistingUserByEmail() {
+        User existing = user(EMAIL, USERNAME, ENCODED_PASSWORD, false);
+        when(userRepository.findByGoogleId(GOOGLE_ID)).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(existing));
+        when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        UserResponse response = userService.findOrCreateGoogleUser(EMAIL, GOOGLE_ID);
+
+        assertThat(response.verified()).isTrue();
+        assertThat(existing.getGoogleId()).isEqualTo(GOOGLE_ID);
+        assertThat(existing.isVerified()).isTrue();
+        assertThat(existing.getVerifiedAt()).isNotNull();
+    }
+
+    @Test
+    void findOrCreateGoogleUser_createsNewUserWhenNotFound() {
+        when(userRepository.findByGoogleId(GOOGLE_ID)).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
+        when(userRepository.existsByEmail(EMAIL)).thenReturn(false);
+        when(userRepository.saveAndFlush(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        UserResponse response = userService.findOrCreateGoogleUser(EMAIL, GOOGLE_ID);
+
+        assertThat(response.email()).isEqualTo(EMAIL);
+        assertThat(response.verified()).isTrue();
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).saveAndFlush(captor.capture());
+        assertThat(captor.getValue().getGoogleId()).isEqualTo(GOOGLE_ID);
     }
 }

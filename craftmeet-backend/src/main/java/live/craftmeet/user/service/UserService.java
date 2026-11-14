@@ -1,6 +1,7 @@
 package live.craftmeet.user.service;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 import jakarta.transaction.Transactional;
@@ -105,6 +106,42 @@ public class UserService {
         }
 
         return UserResponse.from(user);
+    }
+
+    /**
+     * Finds the user account linked to the given Google identifier, or links
+     * or creates one when no matching account exists.
+     * If an account with the given Google identifier already exists it is
+     * returned as-is. Otherwise, an account matching the given email is linked
+     * by assigning the Google identifier and, when unverified, marked as
+     * verified. If no account matches either identifier, a new verified Google
+     * account is created.
+     *
+     * @param email
+     *                 the email address of the Google account
+     * @param googleId
+     *                 the Google subject identifier for the account
+     * @return the linked or created user's account information
+     */
+    @Transactional
+    public UserResponse findOrCreateGoogleUser(String email, String googleId) {
+        Optional<User> byGoogleId = userRepository.findByGoogleId(googleId);
+        if (byGoogleId.isPresent()) {
+            return UserResponse.from(byGoogleId.get());
+        }
+
+        Optional<User> byEmail = userRepository.findByEmail(email);
+        if (byEmail.isPresent()) {
+            User user = byEmail.get();
+            user.setGoogleId(googleId);
+            if (!user.isVerified()) {
+                user.setVerified(true);
+                user.setVerifiedAt(Instant.now());
+            }
+            return UserResponse.from(userRepository.save(user));
+        }
+
+        return createUserGoogle(email, googleId);
     }
 
     /**
