@@ -92,14 +92,14 @@ export default function HomePage() {
 
           <div className="relative mt-10 flex flex-wrap items-center justify-center gap-3">
             <Button
-              render={<Link href="/login" />}
+              nativeButton={false} render={<Link href="/login" />}
               className="h-10 rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Get started free
             </Button>
             <Button
               variant="outline"
-              render={<Link href="#join-meeting" />}
+              nativeButton={false} render={<Link href="#join-meeting" />}
               className="h-10 rounded-full border-border bg-transparent px-6 text-sm font-medium text-foreground/80 transition-all hover:bg-secondary"
             >
               Join a meeting

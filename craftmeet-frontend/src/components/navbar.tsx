@@ -78,12 +78,12 @@ export function Navbar() {
       <Button
         variant="ghost"
         size="sm"
-        render={<Link href="/login" />}
+        nativeButton={false} render={<Link href="/login" />}
         className="text-muted-foreground hover:bg-accent hover:text-accent-foreground"
       >
         Log in
       </Button>
-      <Button size="sm" render={<Link href="/signup" />}>
+      <Button size="sm" nativeButton={false} render={<Link href="/signup" />}>
         Sign up
       </Button>
     </>
@@ -165,14 +165,14 @@ export function Navbar() {
             <div className="flex items-center gap-3">
               <ThemeToggle />
               {pathname === "/login" ? (
-                <Button size="sm" render={<Link href="/signup" />}>
+                <Button size="sm" nativeButton={false} render={<Link href="/signup" />}>
                   Sign up
                 </Button>
               ) : (
                 <Button
                   variant="ghost"
                   size="sm"
-                  render={<Link href="/login" />}
+                  nativeButton={false} render={<Link href="/login" />}
                   className="text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 >
                   Log in
