@@ -82,6 +82,16 @@ public class AuthService {
     }
 
     @Transactional
+    public LoginResponse googleLogin(String email, String googleId) {
+        UserResponse userResponse = userService.findOrCreateGoogleUser(email, googleId);
+        UUID jti = refreshTokenService.generate(userResponse.id());
+        String accessJwt = jwtService.generate(userResponse.id(), JwtType.ACCESS, null);
+        String refreshJwt = jwtService.generate(userResponse.id(), JwtType.REFRESH, jti);
+        return new LoginResponse(userResponse, jwtService.buildToken(accessJwt, JwtType.ACCESS),
+                jwtService.buildToken(refreshJwt, JwtType.REFRESH));
+    }
+
+    @Transactional
     public RefreshResponse refresh(String refreshToken) {
         Claims claims = jwtService.validate(refreshToken, JwtType.REFRESH);
         UUID newJti = UUID.randomUUID();
