@@ -33,7 +33,11 @@ export async function signup(payload: SignupPayload): Promise<void> {
 }
 
 export async function verifyEmail(token: string): Promise<void> {
-  const res = await apiFetch(`/verify?token=${encodeURIComponent(token)}`);
+  const res = await apiFetch(
+    `/verify?token=${encodeURIComponent(token)}`,
+    {},
+    { refreshOn401: false },
+  );
   if (!res.ok) throw await apiError(res);
 }
 
@@ -66,6 +70,7 @@ export async function resetPassword(
       headers: JSON_HEADERS,
       body: JSON.stringify(payload),
     },
+    { refreshOn401: false },
   );
   if (!res.ok) throw await apiError(res);
 }

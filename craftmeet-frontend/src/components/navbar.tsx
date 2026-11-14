@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Menu, Moon, Sun } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/lib/auth/auth-provider";
 
 const landingLinks = [
@@ -122,6 +122,7 @@ export function Navbar() {
                       <Button
                         variant="ghost"
                         size="icon-sm"
+                        aria-label="Open menu"
                         className="text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                       />
                     }
@@ -132,6 +133,7 @@ export function Navbar() {
                     side="right"
                     className="w-72 border-border bg-background p-6"
                   >
+                    <SheetTitle className="sr-only">Menu</SheetTitle>
                     <div className="mt-8 flex flex-col gap-6">
                       <div className="flex flex-col gap-4">
                         {landingLinks.map((link) => (

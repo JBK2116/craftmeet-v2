@@ -40,12 +40,14 @@ export async function refreshTokens(): Promise<boolean> {
 export async function apiFetch(
   path: string,
   init: RequestInit = {},
+  options: { refreshOn401?: boolean } = {},
 ): Promise<Response> {
+  const { refreshOn401 = true } = options;
   const opts: RequestInit = { ...init, credentials: "include" };
 
   let res = await fetch(`${API_BASE_URL}${path}`, opts);
 
-  if (res.status === 401) {
+  if (res.status === 401 && refreshOn401) {
     const ok = await refreshTokens();
     if (!ok) throw new AuthError();
     res = await fetch(`${API_BASE_URL}${path}`, opts);
