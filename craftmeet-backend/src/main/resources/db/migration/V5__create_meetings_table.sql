@@ -12,6 +12,6 @@ CREATE TABLE meetings (
     CONSTRAINT pk_meetings PRIMARY KEY (id),
     CONSTRAINT fk_meetings_user FOREIGN KEY (user_id)
         REFERENCES users (id) ON DELETE CASCADE,
-    CONSTRAINT ck_meeting_duration CHECK (duration BETWEEN 1 AND 60),
-    CONSTRAINT ck_meeting_participant_cap CHECK (participant_cap BETWEEN 1 AND 100)
+    CONSTRAINT ck_meeting_duration CHECK (duration BETWEEN 1 AND 240),
+    CONSTRAINT ck_meeting_participant_cap CHECK (participant_cap BETWEEN 1 AND 250)
 );
