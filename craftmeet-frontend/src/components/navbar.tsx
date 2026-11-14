@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import { Menu, Moon, Sun } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
@@ -26,15 +25,8 @@ const authRoutes = [
 ];
 
 function ThemeToggle() {
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    setIsDark(document.documentElement.classList.contains("dark"));
-  }, []);
-
   function toggle() {
-    const next = !isDark;
-    setIsDark(next);
+    const next = !document.documentElement.classList.contains("dark");
     document.documentElement.classList.toggle("dark", next);
     localStorage.setItem("theme", next ? "dark" : "light");
   }
@@ -47,7 +39,8 @@ function ThemeToggle() {
       className="text-muted-foreground hover:bg-accent hover:text-accent-foreground"
       aria-label="Toggle theme"
     >
-      {isDark ? <Sun /> : <Moon />}
+      <Sun className="hidden dark:block" />
+      <Moon className="block dark:hidden" />
     </Button>
   );
 }

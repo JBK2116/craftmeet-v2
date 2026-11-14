@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { JoinMeeting } from "@/components/join-meeting";
-import { Navbar } from "@/components/navbar";
 
 const features: { icon: LucideIcon; title: string; desc: string }[] = [
   {
@@ -65,10 +64,8 @@ const steps: { step: string; title: string; desc: string }[] = [
 
 export default function HomePage() {
   return (
-    <>
-      <Navbar />
-      <main className="bg-background text-foreground">
-        <section className="relative flex min-h-[88vh] flex-col items-center justify-center px-6 pt-12 pb-24 text-center overflow-hidden">
+    <main className="bg-background text-foreground">
+      <section className="relative flex min-h-[88vh] flex-col items-center justify-center px-6 pt-12 pb-24 text-center overflow-hidden">
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <div className="h-150 w-150 rounded-full bg-primary/5 blur-3xl" />
           </div>
@@ -223,6 +220,5 @@ export default function HomePage() {
           </div>
         </footer>
       </main>
-    </>
   );
 }
