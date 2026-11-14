@@ -1,0 +1,28 @@
+CREATE TABLE questions (
+    id             UUID          NOT NULL,
+    question_type  VARCHAR(31)   NOT NULL,
+    meeting_id     UUID          NOT NULL,
+    prompt         VARCHAR(500)  NOT NULL,
+    position       INTEGER       NOT NULL,
+    option_1       VARCHAR(200),
+    option_2       VARCHAR(200),
+    option_3       VARCHAR(200),
+    option_4       VARCHAR(200),
+    allow_multiple BOOLEAN,
+    max_length     INTEGER,
+    item_1         VARCHAR(200),
+    item_2         VARCHAR(200),
+    item_3         VARCHAR(200),
+    item_4         VARCHAR(200),
+    min_value      INTEGER,
+    max_value      INTEGER,
+    created_at     TIMESTAMPTZ   NOT NULL,
+    updated_at     TIMESTAMPTZ   NOT NULL,
+    CONSTRAINT pk_questions PRIMARY KEY (id),
+    CONSTRAINT fk_questions_meeting FOREIGN KEY (meeting_id)
+        REFERENCES meetings (id) ON DELETE CASCADE,
+    CONSTRAINT ck_question_position CHECK (position >= 1),
+    CONSTRAINT ck_question_max_length CHECK (max_length BETWEEN 1 AND 5000),
+    CONSTRAINT ck_question_min_value CHECK (min_value BETWEEN 0 AND 10),
+    CONSTRAINT ck_question_max_value CHECK (max_value BETWEEN 0 AND 10)
+);
