@@ -19,3 +19,7 @@ CREATE TABLE meetings (
     CONSTRAINT ck_meeting_duration CHECK (duration BETWEEN 1 AND 240),
     CONSTRAINT ck_meeting_participant_cap CHECK (participant_cap BETWEEN 1 AND 250)
 );
+
+CREATE UNIQUE INDEX uq_meetings_live_user_id
+    ON meetings (user_id)
+    WHERE start_time IS NOT NULL AND end_time IS NULL;
