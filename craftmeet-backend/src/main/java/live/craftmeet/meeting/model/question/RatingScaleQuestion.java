@@ -17,7 +17,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @DiscriminatorValue("rating_scale")
-public final class RatingScaleQuestion extends Question {
+public class RatingScaleQuestion extends Question {
 
     @Column(name = "min_value",
             check = @CheckConstraint(name = "ck_question_min_value",

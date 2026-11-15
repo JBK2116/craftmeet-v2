@@ -16,7 +16,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @DiscriminatorValue("ranked_voting")
-public final class RankedVotingQuestion extends Question {
+public class RankedVotingQuestion extends Question {
 
     @Column(name = "item_1", length = Constants.MAX_MULTIPLE_OPTION_TEXT_LENGTH)
     private String item1;

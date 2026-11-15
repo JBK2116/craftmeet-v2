@@ -17,7 +17,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @DiscriminatorValue("multiple_choice")
-public final class MultipleChoiceQuestion extends Question {
+public class MultipleChoiceQuestion extends Question {
 
     @Column(name = "option_1", length = Constants.MAX_MULTIPLE_OPTION_TEXT_LENGTH)
     private String option1;

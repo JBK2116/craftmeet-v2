@@ -13,5 +13,5 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @DiscriminatorValue("yes_no")
-public final class YesNoQuestion extends Question {
+public class YesNoQuestion extends Question {
 }

@@ -20,9 +20,7 @@ import lombok.*;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "question_type", discriminatorType = DiscriminatorType.STRING)
 @Table(name = "questions")
-public abstract sealed class Question extends BaseEntity
-        permits MultipleChoiceQuestion, LongAnswerQuestion, RankedVotingQuestion,
-                RatingScaleQuestion, YesNoQuestion {
+public abstract class Question extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

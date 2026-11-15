@@ -17,7 +17,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @DiscriminatorValue("long_answer")
-public final class LongAnswerQuestion extends Question {
+public class LongAnswerQuestion extends Question {
 
     @Column(name = "max_length", check = @CheckConstraint(name = "ck_question_max_length", constraint = "max_length BETWEEN "
             + Constants.MIN_LONG_ANSWER_TEXT_LENGTH + " AND " + Constants.MAX_LONG_ANSWER_TEXT_LENGTH))
