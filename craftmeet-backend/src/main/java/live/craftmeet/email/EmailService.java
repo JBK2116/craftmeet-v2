@@ -105,7 +105,7 @@ public class EmailService {
      * @return the full verification URL
      */
     public String buildVerificationLink(String token) {
-        String baseUrl = isDev() ? "http://localhost:5173" : "https://craftmeet.live";
+        String baseUrl = isDev() ? "http://localhost:3000" : "https://craftmeet.live";
         return baseUrl + "/verify?token=" + token;
     }
 
@@ -117,7 +117,7 @@ public class EmailService {
      * @return the full password reset URL
      */
     public String buildResetPasswordLink(String token) {
-        String baseUrl = isDev() ? "http://localhost:5173" : "https://craftmeet.live";
+        String baseUrl = isDev() ? "http://localhost:3000" : "https://craftmeet.live";
         return baseUrl + "/reset-password?token=" + token;
     }
 
