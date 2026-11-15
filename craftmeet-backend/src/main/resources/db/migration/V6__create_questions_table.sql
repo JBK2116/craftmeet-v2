@@ -19,6 +19,7 @@ CREATE TABLE questions (
     created_at     TIMESTAMPTZ   NOT NULL,
     updated_at     TIMESTAMPTZ   NOT NULL,
     CONSTRAINT pk_questions PRIMARY KEY (id),
+    CONSTRAINT uq_questions_meeting_position UNIQUE (meeting_id, position),
     CONSTRAINT fk_questions_meeting FOREIGN KEY (meeting_id)
         REFERENCES meetings (id) ON DELETE CASCADE,
     CONSTRAINT ck_question_position CHECK (position >= 1),
