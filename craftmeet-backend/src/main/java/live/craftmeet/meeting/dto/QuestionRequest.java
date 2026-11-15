@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = RatingScaleQuestionRequest.class, name = "rating_scale"),
         @JsonSubTypes.Type(value = YesNoQuestionRequest.class, name = "yes_no")
 })
-public sealed interface CreateQuestionRequest
+public sealed interface QuestionRequest
         permits MultipleChoiceQuestionRequest, LongAnswerQuestionRequest,
         RankedVotingQuestionRequest, RatingScaleQuestionRequest, YesNoQuestionRequest {
 

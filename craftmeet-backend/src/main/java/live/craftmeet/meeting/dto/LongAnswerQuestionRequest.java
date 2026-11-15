@@ -23,5 +23,5 @@ public record LongAnswerQuestionRequest(
         @NotNull
         @Min(Constants.MIN_LONG_ANSWER_TEXT_LENGTH)
         @Max(Constants.MAX_LONG_ANSWER_TEXT_LENGTH)
-        Integer maxLength) implements CreateQuestionRequest {
+        Integer maxLength) implements QuestionRequest {
 }

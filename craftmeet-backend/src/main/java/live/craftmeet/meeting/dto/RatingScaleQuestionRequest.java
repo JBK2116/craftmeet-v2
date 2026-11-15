@@ -28,5 +28,5 @@ public record RatingScaleQuestionRequest(
         @NotNull
         @Min(Constants.MIN_RATING_SCALE_VALUE)
         @Max(Constants.MAX_RATING_SCALE_VALUE)
-        Integer max) implements CreateQuestionRequest {
+        Integer max) implements QuestionRequest {
 }

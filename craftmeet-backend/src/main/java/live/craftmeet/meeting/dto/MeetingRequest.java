@@ -14,7 +14,7 @@ import live.craftmeet.meeting.utils.Constants;
 /**
  * Request payload for creating a meeting with its settings.
  */
-public record CreateMeetingRequest(
+public record MeetingRequest(
         @NotBlank(message = "Title is required") @Size(min = Constants.MIN_TITLE_LENGTH, max = Constants.MAX_TITLE_LENGTH, message = "Title must be between {min} and {max} characters") String title,
 
         @Size(min = Constants.MIN_DESCRIPTION_LENGTH, max = Constants.MAX_DESCRIPTION_LENGTH, message = "Description must be between {min} and {max} characters") String description,
@@ -23,6 +23,6 @@ public record CreateMeetingRequest(
 
         @NotNull(message = "Participant cap is required") @Min(value = Constants.MIN_PARTICIPANT_COUNT, message = "Participant cap must be at least {value}") @Max(value = Constants.MAX_PARTICIPANT_COUNT, message = "Participant cap must be at most {value}") Integer participantCap,
 
-        @Valid @Size(min = 1, message = "At least one question is required") List<CreateQuestionRequest> questions) {
+        @Valid @Size(min = 1, message = "At least one question is required") List<QuestionRequest> questions) {
 
 }

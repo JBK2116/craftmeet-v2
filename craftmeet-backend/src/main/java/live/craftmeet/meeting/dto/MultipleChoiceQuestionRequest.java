@@ -32,5 +32,5 @@ public record MultipleChoiceQuestionRequest(
         @Size(min = Constants.MIN_MULTIPLE_OPTION_TEXT_LENGTH, max = Constants.MAX_MULTIPLE_OPTION_TEXT_LENGTH)
         String option4,
 
-        Boolean allowMultiple) implements CreateQuestionRequest {
+        Boolean allowMultiple) implements QuestionRequest {
 }
