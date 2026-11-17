@@ -14,10 +14,12 @@ import live.craftmeet.meeting.model.meeting.Meeting;
 @Repository
 public interface MeetingRepository extends JpaRepository<Meeting, UUID> {
 
-    Optional<Meeting> findByRoomCode(String roomCode);
+	Optional<Meeting> findByRoomCode(String roomCode);
 
-    List<Meeting> findByUserId(UUID userId);
+	List<Meeting> findByUserId(UUID userId);
 
-    @Query("SELECT m FROM Meeting m WHERE m.session.startTime IS NOT NULL AND m.session.endTime IS NULL AND m.userId = :userId")
-    Optional<Meeting> findByLiveMeetingAndUserId(@Param("userId") UUID userId);
+	@Query("SELECT m FROM Meeting m WHERE m.session.startTime IS NOT NULL AND m.session.endTime IS NULL AND m.userId = :userId")
+	Optional<Meeting> findByLiveMeetingAndUserId(@Param("userId") UUID userId);
+
+	boolean existsByRoomCode(String roomCode);
 }
