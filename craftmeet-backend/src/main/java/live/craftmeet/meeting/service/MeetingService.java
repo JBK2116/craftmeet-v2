@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import live.craftmeet.meeting.dto.MeetingRequest;
 import live.craftmeet.meeting.dto.MeetingResponse;
 import live.craftmeet.meeting.dto.QuestionResponse;
+import live.craftmeet.meeting.dto.StatResponse;
 import live.craftmeet.meeting.exception.RoomCodeGenerationError;
 import live.craftmeet.meeting.model.meeting.Meeting;
 import live.craftmeet.meeting.model.meeting.MeetingExport;
@@ -23,10 +24,13 @@ public class MeetingService {
 
 	private final MeetingRepository meetingRepository;
 	private final QuestionService questionService;
+	private final StatService statService;
 
-	public MeetingService(MeetingRepository meetingRepository, QuestionService questionService) {
+	public MeetingService(MeetingRepository meetingRepository, QuestionService questionService,
+			StatService statService) {
 		this.meetingRepository = meetingRepository;
 		this.questionService = questionService;
+		this.statService = statService;
 	}
 
 	@Transactional
@@ -34,7 +38,8 @@ public class MeetingService {
 		Meeting meeting = createAndSaveMeeting(meetingRequest, userId);
 		List<QuestionResponse> questionResponseList = questionService.createAndSaveQuestions(meetingRequest.questions(),
 				meeting.getId());
-		return MeetingResponse.from(meeting, questionResponseList);
+		StatResponse statResponse = statService.create(meeting.getId());
+		return MeetingResponse.from(meeting, questionResponseList, statResponse);
 	}
 
 	/**
