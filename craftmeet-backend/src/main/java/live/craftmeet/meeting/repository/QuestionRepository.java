@@ -14,11 +14,11 @@ import live.craftmeet.meeting.model.question.Question;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, UUID> {
 
-    @Modifying
-    @Query("DELETE FROM Question q WHERE q.meetingId = :meetingId")
-    void deleteAllByMeetingId(@Param("meetingId") UUID meetingId);
+	@Modifying
+	@Query("DELETE FROM Question q WHERE q.meetingId = :meetingId")
+	void deleteAllByMeetingId(@Param("meetingId") UUID meetingId);
 
-    List<Question> findByMeetingIdOrderByPositionAsc(UUID meetingId);
+	List<Question> findByMeetingIdOrderByPositionAsc(UUID meetingId);
 
-    long countByMeetingId(UUID meetingId);
+	long countByMeetingId(UUID meetingId);
 }

@@ -59,6 +59,15 @@ public class QuestionService {
 		return createAndSaveQuestions(questionRequests, meetingId);
 	}
 
+	public List<QuestionResponse> getQuestions(UUID meetingId) {
+		List<Question> questions = questionRepository.findByMeetingIdOrderByPositionAsc(meetingId);
+		List<QuestionResponse> questionResponses = new ArrayList<>();
+		for (Question question : questions) {
+			questionResponses.add(QuestionResponse.from(question));
+		}
+		return questionResponses;
+	}
+
 	/**
 	 * Creates and saves a free-text question with a maximum response length.
 	 */

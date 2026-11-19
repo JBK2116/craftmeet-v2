@@ -50,4 +50,11 @@ public class MeetingController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@GetMapping("/meetings/{id}")
+	public ResponseEntity<MeetingResponse> getMeeting(@PathVariable("id") UUID id,
+			@RequestAttribute(Constants.USER_ID_ATTRIBUTE) UUID userId) {
+		MeetingResponse meetingResponse = meetingService.getMeeting(id, userId);
+		return ResponseEntity.ok(meetingResponse);
+	}
+
 }

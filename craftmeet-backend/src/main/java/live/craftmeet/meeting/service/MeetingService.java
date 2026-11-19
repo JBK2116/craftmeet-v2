@@ -66,6 +66,15 @@ public class MeetingService {
 		meetingRepository.deleteAllByUserId(userId);
 	}
 
+	@Transactional(readOnly = true)
+	public MeetingResponse getMeeting(UUID meetingId, UUID userId) {
+		Meeting meeting = meetingRepository.findByIdAndUserId(meetingId, userId)
+				.orElseThrow(() -> new MeetingNotFoundError(meetingId));
+		List<QuestionResponse> questionResponses = questionService.getQuestions(meetingId);
+		StatResponse statResponse = statService.get(meetingId);
+		return MeetingResponse.from(meeting, questionResponses, statResponse);
+	}
+
 	/**
 	 * Creates a meeting from the supplied request and saves it to the repository.
 	 * The meeting is assigned the given user ID, a generated room code, and the
