@@ -6,10 +6,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import live.craftmeet.meeting.dto.MeetingRequest;
 import live.craftmeet.meeting.dto.MeetingResponse;
@@ -31,5 +28,12 @@ public class MeetingController {
 			@RequestAttribute(Constants.USER_ID_ATTRIBUTE) UUID userId) {
 		MeetingResponse meetingResponse = meetingService.create(meetingRequest, userId);
 		return ResponseEntity.status(HttpStatus.CREATED).body(meetingResponse);
+	}
+
+	@PutMapping("/meetings/{id}")
+	public ResponseEntity<MeetingResponse> updateMeeting(@Valid @RequestBody MeetingRequest meetingRequest,
+			@PathVariable("id") UUID id, @RequestAttribute(Constants.USER_ID_ATTRIBUTE) UUID userId) {
+		MeetingResponse meetingResponse = meetingService.update(meetingRequest, id, userId);
+		return ResponseEntity.ok(meetingResponse);
 	}
 }
