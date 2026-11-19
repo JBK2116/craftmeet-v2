@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -51,9 +52,10 @@ public class JwtFilter extends OncePerRequestFilter {
 		String token = accessToken.get();
 		try {
 			Claims claims = jwtService.validate(token, JwtType.ACCESS);
-			request.setAttribute("user_id", claims.getSubject());
+			String userId = claims.getSubject();
+			request.setAttribute("user_id", UUID.fromString(userId));
 			filterChain.doFilter(request, response);
-		} catch (InvalidJwtException e) {
+		} catch (InvalidJwtException | IllegalArgumentException e) {
 			writeUnauthorized(request, response);
 		}
 	}
@@ -63,9 +65,9 @@ public class JwtFilter extends OncePerRequestFilter {
 	 * the access token is missing, invalid, or expired.
 	 *
 	 * @param request
-	 *                    the HTTP request whose path is reported in the error body
+	 *                     the HTTP request whose path is reported in the error body
 	 * @param response
-	 *                    the HTTP response to which the error body is written
+	 *                     the HTTP response to which the error body is written
 	 * @throws IOException
 	 *                         if the response body cannot be written
 	 */
