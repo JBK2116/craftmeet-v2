@@ -3,6 +3,7 @@ package live.craftmeet.security;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,6 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 /**
  * Web security and CORS configuration.
@@ -18,7 +20,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
  * <p>
  * Authentication is handled manually in the service layer (httpOnly JWT
  * cookies validated in the controller/service), so Spring Security's default
- * auto-configured Basic-auth chain is replaced here: every request is
+ * autoconfigured Basic-auth chain is replaced here: every request is
  * permitted through, CSRF is disabled (cookie + JSON API), and CORS is enabled
  * for the frontend origin with credentials support.
  */
@@ -28,12 +30,20 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(
 			HttpSecurity http,
-			CorsConfigurationSource corsConfigurationSource) throws Exception {
+			CorsConfigurationSource corsConfigurationSource, JwtFilter jwtFilter) throws Exception {
 		http
 				.csrf(AbstractHttpConfigurer::disable)
 				.cors(cors -> cors.configurationSource(corsConfigurationSource))
-				.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+				.authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+				.addFilterAfter(jwtFilter, CorsFilter.class);
 		return http.build();
+	}
+
+	@Bean
+	public FilterRegistrationBean<JwtFilter> jwtFilterRegistration(JwtFilter jwtFilter) {
+		FilterRegistrationBean<JwtFilter> registration = new FilterRegistrationBean<>(jwtFilter);
+		registration.setEnabled(false);
+		return registration;
 	}
 
 	@Bean
