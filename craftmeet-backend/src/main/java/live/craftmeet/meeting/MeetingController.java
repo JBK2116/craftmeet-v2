@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import live.craftmeet.meeting.dto.MeetingRequest;
-import live.craftmeet.meeting.dto.MeetingResponse;
+import live.craftmeet.meeting.dto.meeting.MeetingRequest;
+import live.craftmeet.meeting.dto.meeting.MeetingResponse;
 import live.craftmeet.meeting.service.MeetingService;
 import live.craftmeet.user.utils.Constants;
 

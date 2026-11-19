@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import live.craftmeet.meeting.dto.StatResponse;
+import live.craftmeet.meeting.dto.stat.StatResponse;
 import live.craftmeet.meeting.exception.StatNotFoundError;
 import live.craftmeet.meeting.model.stat.Stat;
 import live.craftmeet.meeting.repository.StatRepository;

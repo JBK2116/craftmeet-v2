@@ -1,9 +1,11 @@
-package live.craftmeet.meeting.dto;
+package live.craftmeet.meeting.dto.meeting;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import live.craftmeet.meeting.dto.question.QuestionResponse;
+import live.craftmeet.meeting.dto.stat.StatResponse;
 import live.craftmeet.meeting.model.meeting.Meeting;
 
 /**

@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-import live.craftmeet.meeting.dto.QuestionRequest;
+import live.craftmeet.meeting.dto.question.QuestionRequest;
 
 public class ContiguousPositionsValidator
 		implements ConstraintValidator<ContiguousPositions, List<QuestionRequest>> {

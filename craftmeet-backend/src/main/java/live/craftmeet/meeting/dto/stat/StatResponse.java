@@ -1,4 +1,4 @@
-package live.craftmeet.meeting.dto;
+package live.craftmeet.meeting.dto.stat;
 
 import java.util.UUID;
 

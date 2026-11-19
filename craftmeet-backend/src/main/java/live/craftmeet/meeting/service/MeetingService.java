@@ -7,10 +7,10 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import live.craftmeet.meeting.dto.MeetingRequest;
-import live.craftmeet.meeting.dto.MeetingResponse;
-import live.craftmeet.meeting.dto.QuestionResponse;
-import live.craftmeet.meeting.dto.StatResponse;
+import live.craftmeet.meeting.dto.meeting.MeetingRequest;
+import live.craftmeet.meeting.dto.meeting.MeetingResponse;
+import live.craftmeet.meeting.dto.question.QuestionResponse;
+import live.craftmeet.meeting.dto.stat.StatResponse;
 import live.craftmeet.meeting.exception.MeetingNotEditableError;
 import live.craftmeet.meeting.exception.MeetingNotFoundError;
 import live.craftmeet.meeting.exception.RoomCodeGenerationError;

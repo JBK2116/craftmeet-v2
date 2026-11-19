@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import live.craftmeet.meeting.dto.*;
+import live.craftmeet.meeting.dto.question.*;
 import live.craftmeet.meeting.model.question.*;
 import live.craftmeet.meeting.repository.QuestionRepository;
 

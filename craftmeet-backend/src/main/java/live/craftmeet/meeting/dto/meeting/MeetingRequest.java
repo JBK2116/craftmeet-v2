@@ -1,4 +1,4 @@
-package live.craftmeet.meeting.dto;
+package live.craftmeet.meeting.dto.meeting;
 
 import java.util.List;
 
@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
 import live.craftmeet.meeting.annotation.ContiguousPositions;
+import live.craftmeet.meeting.dto.question.QuestionRequest;
 import live.craftmeet.meeting.utils.Constants;
 
 /**
