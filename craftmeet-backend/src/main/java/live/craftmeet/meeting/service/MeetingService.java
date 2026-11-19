@@ -11,6 +11,8 @@ import live.craftmeet.meeting.dto.MeetingRequest;
 import live.craftmeet.meeting.dto.MeetingResponse;
 import live.craftmeet.meeting.dto.QuestionResponse;
 import live.craftmeet.meeting.dto.StatResponse;
+import live.craftmeet.meeting.exception.MeetingNotEditableError;
+import live.craftmeet.meeting.exception.MeetingNotFoundError;
 import live.craftmeet.meeting.exception.RoomCodeGenerationError;
 import live.craftmeet.meeting.model.meeting.Meeting;
 import live.craftmeet.meeting.model.meeting.MeetingExport;
@@ -42,6 +44,15 @@ public class MeetingService {
 		return MeetingResponse.from(meeting, questionResponseList, statResponse);
 	}
 
+	@Transactional
+	public MeetingResponse update(MeetingRequest meetingRequest, UUID meetingId, UUID userId) {
+		Meeting meeting = updateAndSaveMeeting(meetingRequest, meetingId, userId);
+		List<QuestionResponse> questionResponses = questionService.rotateAndSaveQuestions(meetingRequest.questions(),
+				meetingId);
+		StatResponse statResponse = statService.get(meetingId);
+		return MeetingResponse.from(meeting, questionResponses, statResponse);
+	}
+
 	/**
 	 * Creates a meeting from the supplied request and saves it to the repository.
 	 * The meeting is assigned the given user ID, a generated room code, and the
@@ -63,6 +74,20 @@ public class MeetingService {
 		meeting.setSession(new MeetingSession());
 		meeting.setExport(new MeetingExport());
 		return meetingRepository.save(meeting);
+	}
+
+	private Meeting updateAndSaveMeeting(MeetingRequest meetingRequest, UUID meetingId, UUID userId) {
+		Meeting meeting = meetingRepository.findByIdAndUserId(meetingId, userId)
+				.orElseThrow(() -> new MeetingNotFoundError(meetingId));
+		if (meetingUsed(meeting)) {
+			throw new MeetingNotEditableError(meetingId);
+		}
+		meeting.setTitle(meetingRequest.title());
+		meeting.setDescription(meetingRequest.description());
+		meeting.getSettings().setDuration(meetingRequest.duration());
+		meeting.getSettings().setParticipantCap(meetingRequest.participantCap());
+		meeting = meetingRepository.save(meeting);
+		return meeting;
 	}
 
 	/**
@@ -87,5 +112,17 @@ public class MeetingService {
 			counter++;
 		}
 		throw new RoomCodeGenerationError();
+	}
+
+	/**
+	 * Checks whether the meeting has been used, i.e. whether its session has
+	 * started or ended.
+	 *
+	 * @param meeting
+	 *                    the meeting to check
+	 * @return true if the session start time or end time is set, false otherwise
+	 */
+	private boolean meetingUsed(Meeting meeting) {
+		return ((meeting.getSession().getStartTime() != null) || (meeting.getSession().getEndTime() != null));
 	}
 }

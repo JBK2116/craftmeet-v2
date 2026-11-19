@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import live.craftmeet.meeting.dto.StatResponse;
+import live.craftmeet.meeting.exception.StatNotFoundError;
 import live.craftmeet.meeting.model.stat.Stat;
 import live.craftmeet.meeting.repository.StatRepository;
 
@@ -29,6 +30,19 @@ public class StatService {
 	public StatResponse create(UUID meetingId) {
 		return createAndSave(meetingId);
 
+	}
+
+	/**
+	 * Retrieves the statistics record for the specified meeting.
+	 *
+	 * @param meetingId
+	 *                      the ID of the meeting whose statistics record is
+	 *                      retrieved
+	 * @return the response containing the statistics data for the meeting
+	 */
+	public StatResponse get(UUID meetingId) {
+		Stat stat = statRepository.findByMeetingId(meetingId).orElseThrow(() -> new StatNotFoundError(meetingId));
+		return StatResponse.from(stat);
 	}
 
 	/**

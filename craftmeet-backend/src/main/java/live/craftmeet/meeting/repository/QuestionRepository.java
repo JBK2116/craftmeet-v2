@@ -11,6 +11,8 @@ import live.craftmeet.meeting.model.question.Question;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, UUID> {
 
+    void deleteAllByMeetingId(UUID meetingId);
+
     List<Question> findByMeetingIdOrderByPositionAsc(UUID meetingId);
 
     long countByMeetingId(UUID meetingId);

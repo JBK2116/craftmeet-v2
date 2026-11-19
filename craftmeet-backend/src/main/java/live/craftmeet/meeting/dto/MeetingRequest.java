@@ -9,7 +9,7 @@ import live.craftmeet.meeting.annotation.ContiguousPositions;
 import live.craftmeet.meeting.utils.Constants;
 
 /**
- * Request payload for creating a meeting with its settings.
+ * Request payload for creating or editing a meeting with its settings.
  */
 public record MeetingRequest(
 		@NotBlank(message = "Title is required") @Size(min = Constants.MIN_TITLE_LENGTH, max = Constants.MAX_TITLE_LENGTH, message = "Title must be between {min} and {max} characters") String title,
