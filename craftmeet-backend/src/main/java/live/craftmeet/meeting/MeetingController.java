@@ -43,4 +43,11 @@ public class MeetingController {
 		meetingService.deleteMeeting(id, userId);
 		return ResponseEntity.noContent().build();
 	}
+
+	@DeleteMapping("/meetings")
+	public ResponseEntity<Void> deleteMeetings(@RequestAttribute(Constants.USER_ID_ATTRIBUTE) UUID userId) {
+		meetingService.deleteMeetings(userId);
+		return ResponseEntity.noContent().build();
+	}
+
 }

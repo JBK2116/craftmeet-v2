@@ -61,6 +61,11 @@ public class MeetingService {
 		}
 	}
 
+	@Transactional
+	public void deleteMeetings(UUID userId) {
+		meetingRepository.deleteAllByUserId(userId);
+	}
+
 	/**
 	 * Creates a meeting from the supplied request and saves it to the repository.
 	 * The meeting is assigned the given user ID, a generated room code, and the
