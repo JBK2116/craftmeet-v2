@@ -36,4 +36,11 @@ public class MeetingController {
 		MeetingResponse meetingResponse = meetingService.update(meetingRequest, id, userId);
 		return ResponseEntity.ok(meetingResponse);
 	}
+
+	@DeleteMapping("/meetings/{id}")
+	public ResponseEntity<Void> deleteMeeting(@PathVariable("id") UUID id,
+			@RequestAttribute(Constants.USER_ID_ATTRIBUTE) UUID userId) {
+		meetingService.deleteMeeting(id, userId);
+		return ResponseEntity.noContent().build();
+	}
 }

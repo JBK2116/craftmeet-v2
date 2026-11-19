@@ -53,6 +53,14 @@ public class MeetingService {
 		return MeetingResponse.from(meeting, questionResponses, statResponse);
 	}
 
+	@Transactional
+	public void deleteMeeting(UUID meetingId, UUID userId) {
+		int deleted = meetingRepository.deleteByIdAndUserId(meetingId, userId);
+		if (deleted == 0) {
+			throw new MeetingNotFoundError(meetingId);
+		}
+	}
+
 	/**
 	 * Creates a meeting from the supplied request and saves it to the repository.
 	 * The meeting is assigned the given user ID, a generated room code, and the
