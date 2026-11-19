@@ -20,4 +20,7 @@ public final class Constants {
 
     public static final int MAX_GOOGLE_ID_LENGTH = 255;
 
+    /** Name of the request attribute holding the authenticated user's ID. */
+    public static final String USER_ID_ATTRIBUTE = "user_id";
+
 }

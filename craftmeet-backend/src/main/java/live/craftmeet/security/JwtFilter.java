@@ -24,6 +24,7 @@ import live.craftmeet.authentication.jwt.JwtType;
 import live.craftmeet.authentication.service.JwtService;
 import live.craftmeet.exception.ErrorCode;
 import live.craftmeet.exception.ErrorResponse;
+import live.craftmeet.user.utils.Constants;
 import tools.jackson.databind.ObjectMapper;
 
 @Component
@@ -53,7 +54,7 @@ public class JwtFilter extends OncePerRequestFilter {
 		try {
 			Claims claims = jwtService.validate(token, JwtType.ACCESS);
 			String userId = claims.getSubject();
-			request.setAttribute("user_id", UUID.fromString(userId));
+			request.setAttribute(Constants.USER_ID_ATTRIBUTE, UUID.fromString(userId));
 			filterChain.doFilter(request, response);
 		} catch (InvalidJwtException | IllegalArgumentException e) {
 			writeUnauthorized(request, response);
