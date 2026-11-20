@@ -92,7 +92,7 @@ class DeleteMeetingE2ETest {
                 .requestAttr(Constants.USER_ID_ATTRIBUTE, user.getId()))
                 .andExpect(status().isNoContent());
 
-        assertThat(meetingRepository.findByUserId(user.getId())).isEmpty();
+        assertThat(meetingRepository.findByUserIdOrderByCreatedAtDesc(user.getId())).isEmpty();
         assertThat(questionRepository.findByMeetingIdOrderByPositionAsc(meetingId)).isEmpty();
         assertThat(statRepository.findByMeetingId(meetingId)).isEmpty();
     }

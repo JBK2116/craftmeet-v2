@@ -1,6 +1,8 @@
 package live.craftmeet.meeting.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -73,6 +75,24 @@ public class MeetingService {
 		List<QuestionResponse> questionResponses = questionService.getQuestions(meetingId);
 		StatResponse statResponse = statService.get(meetingId);
 		return MeetingResponse.from(meeting, questionResponses, statResponse);
+	}
+
+	@Transactional(readOnly = true)
+	public List<MeetingResponse> getMeetings(UUID userId) {
+		List<Meeting> meetings = meetingRepository.findByUserIdOrderByCreatedAtDesc(userId);
+		if (meetings.isEmpty()) {
+			return List.of();
+		}
+		List<UUID> meetingIds = meetings.stream().map(Meeting::getId).toList();
+		Map<UUID, List<QuestionResponse>> questionsByMeeting = questionService.getQuestionsByMeetingId(meetingIds);
+		Map<UUID, StatResponse> statsByMeeting = statService.getStatsByMeetingId(meetingIds);
+		List<MeetingResponse> meetingResponses = new ArrayList<>();
+		for (Meeting meeting : meetings) {
+			meetingResponses.add(MeetingResponse.from(meeting,
+					questionsByMeeting.getOrDefault(meeting.getId(), List.of()),
+					statsByMeeting.get(meeting.getId())));
+		}
+		return meetingResponses;
 	}
 
 	/**

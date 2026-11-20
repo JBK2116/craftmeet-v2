@@ -1,7 +1,9 @@
 package live.craftmeet.meeting.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -66,6 +68,16 @@ public class QuestionService {
 			questionResponses.add(QuestionResponse.from(question));
 		}
 		return questionResponses;
+	}
+
+	public Map<UUID, List<QuestionResponse>> getQuestionsByMeetingId(List<UUID> meetingIds) {
+		List<Question> questions = questionRepository.findByMeetingIdInOrderByPositionAsc(meetingIds);
+		Map<UUID, List<QuestionResponse>> questionsByMeeting = new HashMap<>();
+		for (Question question : questions) {
+			questionsByMeeting.computeIfAbsent(question.getMeetingId(), k -> new ArrayList<>())
+					.add(QuestionResponse.from(question));
+		}
+		return questionsByMeeting;
 	}
 
 	/**

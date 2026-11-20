@@ -1,5 +1,8 @@
 package live.craftmeet.meeting.service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -43,6 +46,15 @@ public class StatService {
 	public StatResponse get(UUID meetingId) {
 		Stat stat = statRepository.findByMeetingId(meetingId).orElseThrow(() -> new StatNotFoundError(meetingId));
 		return StatResponse.from(stat);
+	}
+
+	public Map<UUID, StatResponse> getStatsByMeetingId(List<UUID> meetingIds) {
+		List<Stat> stats = statRepository.findByMeetingIdIn(meetingIds);
+		Map<UUID, StatResponse> statsByMeeting = new HashMap<>();
+		for (Stat stat : stats) {
+			statsByMeeting.put(stat.getMeetingId(), StatResponse.from(stat));
+		}
+		return statsByMeeting;
 	}
 
 	/**

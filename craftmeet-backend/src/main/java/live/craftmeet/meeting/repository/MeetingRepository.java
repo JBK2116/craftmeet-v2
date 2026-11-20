@@ -25,7 +25,7 @@ public interface MeetingRepository extends JpaRepository<Meeting, UUID> {
 
 	int deleteByIdAndUserId(UUID id, UUID userId);
 
-	List<Meeting> findByUserId(UUID userId);
+	List<Meeting> findByUserIdOrderByCreatedAtDesc(UUID userId);
 
 	@Query("SELECT m FROM Meeting m WHERE m.session.startTime IS NOT NULL AND m.session.endTime IS NULL AND m.userId = :userId")
 	Optional<Meeting> findByLiveMeetingAndUserId(@Param("userId") UUID userId);

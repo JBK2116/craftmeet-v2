@@ -1,5 +1,6 @@
 package live.craftmeet.meeting;
 
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.validation.Valid;
@@ -55,6 +56,13 @@ public class MeetingController {
 			@RequestAttribute(Constants.USER_ID_ATTRIBUTE) UUID userId) {
 		MeetingResponse meetingResponse = meetingService.getMeeting(id, userId);
 		return ResponseEntity.ok(meetingResponse);
+	}
+
+	@GetMapping("/meetings")
+	public ResponseEntity<List<MeetingResponse>> getMeetings(
+			@RequestAttribute(Constants.USER_ID_ATTRIBUTE) UUID userId) {
+		List<MeetingResponse> meetingResponses = meetingService.getMeetings(userId);
+		return ResponseEntity.ok(meetingResponses);
 	}
 
 }

@@ -20,5 +20,7 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
 
 	List<Question> findByMeetingIdOrderByPositionAsc(UUID meetingId);
 
+	List<Question> findByMeetingIdInOrderByPositionAsc(List<UUID> meetingIds);
+
 	long countByMeetingId(UUID meetingId);
 }
