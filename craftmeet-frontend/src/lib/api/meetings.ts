@@ -1,10 +1,20 @@
 import { apiError, apiFetch } from "@/lib/api/client";
-import type { Meeting } from "@/lib/types/meeting";
+import type { Meeting, MeetingRequest } from "@/lib/types/meeting";
 
 export async function getMeetings(): Promise<Meeting[]> {
   const res = await apiFetch("/meetings");
   if (!res.ok) throw await apiError(res);
   return (await res.json()) as Meeting[];
+}
+
+export async function createMeeting(body: MeetingRequest): Promise<Meeting> {
+  const res = await apiFetch("/meetings", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw await apiError(res);
+  return (await res.json()) as Meeting;
 }
 
 export async function deleteMeeting(id: string): Promise<void> {

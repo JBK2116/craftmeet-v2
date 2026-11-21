@@ -24,3 +24,13 @@ export function useDeleteMeeting() {
     },
   });
 }
+
+export function useCreateMeeting() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: meetingsApi.createMeeting,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: meetingsKeys.all });
+    },
+  });
+}
