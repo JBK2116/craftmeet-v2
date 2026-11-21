@@ -39,7 +39,7 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
 
   // Focused routes (e.g. the create-meeting wizard) render without the app
   // shell — no sidebar, top bar, or search — since they carry their own header.
-  if (pathname === "/meetings/create") {
+  if (pathname === "/meetings/create" || pathname === "/meetings/edit") {
     return (
       <div className="min-h-screen bg-background">
         <main className="mx-auto w-full max-w-[90rem] px-4 py-8 sm:px-6 lg:px-10">

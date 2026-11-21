@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -23,6 +24,7 @@ export function MeetingDataRow({
   meeting: Meeting;
   onDelete: () => void;
 }) {
+  const router = useRouter();
   const status = deriveStatus(meeting);
 
   return (
@@ -63,7 +65,9 @@ export function MeetingDataRow({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             {status === "draft" ? (
-              <DropdownMenuItem onClick={() => comingSoon("Edit")}>
+              <DropdownMenuItem
+                onClick={() => router.push(`/meetings/edit?id=${meeting.id}`)}
+              >
                 Edit
               </DropdownMenuItem>
             ) : (

@@ -8,8 +8,10 @@ import {
   MEETING_LIMITS,
 } from "@/lib/meeting-constants";
 import type {
+  Meeting,
   MeetingQuestionRequest,
   MeetingRequest,
+  Question,
   QuestionType,
 } from "@/lib/types/meeting";
 
@@ -241,5 +243,60 @@ export function toMeetingRequest(values: MeetingFormValues): MeetingRequest {
     questions: values.questions.map((question, index) =>
       toRequestQuestion(question, index + 1),
     ),
+  };
+}
+
+/** Maps a persisted question (backend `QuestionResponse`) back into the flat
+ *  camelCase form shape used by the wizard, filling nulls with defaults. */
+function toFormQuestion(question: Question): MeetingFormQuestion {
+  switch (question.type) {
+    case "multiple_choice":
+      return {
+        type: "multiple_choice",
+        prompt: question.prompt,
+        option1: question.option1,
+        option2: question.option2,
+        option3: question.option3 ?? "",
+        option4: question.option4 ?? "",
+        allowMultiple: question.allowMultiple ?? false,
+      };
+    case "long_answer":
+      return {
+        type: "long_answer",
+        prompt: question.prompt,
+        maxLength: question.maxLength ?? DEFAULT_MAX_LENGTH,
+      };
+    case "ranked_voting":
+      return {
+        type: "ranked_voting",
+        prompt: question.prompt,
+        item1: question.item1,
+        item2: question.item2,
+        item3: question.item3 ?? "",
+        item4: question.item4 ?? "",
+      };
+    case "rating_scale":
+      return {
+        type: "rating_scale",
+        prompt: question.prompt,
+        min: question.min ?? DEFAULT_RATING.min,
+        max: question.max ?? DEFAULT_RATING.max,
+      };
+    case "yes_no":
+      return { type: "yes_no", prompt: question.prompt };
+  }
+}
+
+/** Reverse of `toMeetingRequest`: rebuilds wizard form values from a persisted
+ *  meeting so the edit page can prefill the create wizard. */
+export function toMeetingFormValues(meeting: Meeting): MeetingFormValues {
+  return {
+    title: meeting.title,
+    description: meeting.description ?? "",
+    duration: meeting.duration,
+    participantCap: meeting.participantCap,
+    questions: [...meeting.questions]
+      .sort((a, b) => a.position - b.position)
+      .map(toFormQuestion),
   };
 }

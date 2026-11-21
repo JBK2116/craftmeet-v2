@@ -17,6 +17,25 @@ export async function createMeeting(body: MeetingRequest): Promise<Meeting> {
   return (await res.json()) as Meeting;
 }
 
+export async function getMeeting(id: string): Promise<Meeting> {
+  const res = await apiFetch(`/meetings/${id}`);
+  if (!res.ok) throw await apiError(res);
+  return (await res.json()) as Meeting;
+}
+
+export async function updateMeeting(
+  id: string,
+  body: MeetingRequest,
+): Promise<Meeting> {
+  const res = await apiFetch(`/meetings/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw await apiError(res);
+  return (await res.json()) as Meeting;
+}
+
 export async function deleteMeeting(id: string): Promise<void> {
   const res = await apiFetch(`/meetings/${id}`, { method: "DELETE" });
   if (!res.ok) throw await apiError(res);

@@ -9,15 +9,54 @@ export type QuestionType =
   | "rating_scale"
   | "yes_no";
 
-/** The subset of a question the dashboard needs. Type-specific fields are
- *  added when the create/edit/host pages are built. */
-export type Question = {
+/** A persisted question as returned by the backend (`QuestionResponse`).
+ *  Jackson-polymorphic on `type`, so each variant carries its type-specific
+ *  fields; nullable columns arrive as `null`. */
+type QuestionBase = {
   id: string;
   meetingId: string;
   prompt: string;
   position: number;
-  type: QuestionType;
 };
+
+export type MultipleChoiceQuestion = QuestionBase & {
+  type: "multiple_choice";
+  option1: string;
+  option2: string;
+  option3: string | null;
+  option4: string | null;
+  allowMultiple: boolean | null;
+};
+
+export type LongAnswerQuestion = QuestionBase & {
+  type: "long_answer";
+  maxLength: number | null;
+};
+
+export type RankedVotingQuestion = QuestionBase & {
+  type: "ranked_voting";
+  item1: string;
+  item2: string;
+  item3: string | null;
+  item4: string | null;
+};
+
+export type RatingScaleQuestion = QuestionBase & {
+  type: "rating_scale";
+  min: number | null;
+  max: number | null;
+};
+
+export type YesNoQuestion = QuestionBase & {
+  type: "yes_no";
+};
+
+export type Question =
+  | MultipleChoiceQuestion
+  | LongAnswerQuestion
+  | RankedVotingQuestion
+  | RatingScaleQuestion
+  | YesNoQuestion;
 
 export type MeetingStat = {
   id: string;
