@@ -43,3 +43,60 @@ export type Meeting = {
   questions: Question[];
   statResponse: MeetingStat;
 };
+
+export type MultipleChoiceQuestionRequest = {
+  type: "multiple_choice";
+  prompt: string;
+  position: number;
+  option1: string;
+  option2: string;
+  option3: string | null;
+  option4: string | null;
+  allowMultiple: boolean;
+};
+
+export type LongAnswerQuestionRequest = {
+  type: "long_answer";
+  prompt: string;
+  position: number;
+  maxLength: number;
+};
+
+export type RankedVotingQuestionRequest = {
+  type: "ranked_voting";
+  prompt: string;
+  position: number;
+  item1: string;
+  item2: string;
+  item3: string | null;
+  item4: string | null;
+};
+
+export type RatingScaleQuestionRequest = {
+  type: "rating_scale";
+  prompt: string;
+  position: number;
+  min: number;
+  max: number;
+};
+
+export type YesNoQuestionRequest = {
+  type: "yes_no";
+  prompt: string;
+  position: number;
+};
+
+export type MeetingQuestionRequest =
+  | MultipleChoiceQuestionRequest
+  | LongAnswerQuestionRequest
+  | RankedVotingQuestionRequest
+  | RatingScaleQuestionRequest
+  | YesNoQuestionRequest;
+
+export type MeetingRequest = {
+  title: string;
+  description: string | null;
+  duration: number;
+  participantCap: number;
+  questions: MeetingQuestionRequest[];
+};
