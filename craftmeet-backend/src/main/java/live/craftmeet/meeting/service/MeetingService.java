@@ -165,6 +165,10 @@ public class MeetingService {
 	 * @return true if the session start time or end time is set, false otherwise
 	 */
 	private boolean meetingUsed(Meeting meeting) {
-		return ((meeting.getSession().getStartTime() != null) || (meeting.getSession().getEndTime() != null));
+		MeetingSession session = meeting.getSession();
+		if (session == null) {
+			return false;
+		}
+		return session.getStartTime() != null || session.getEndTime() != null;
 	}
 }

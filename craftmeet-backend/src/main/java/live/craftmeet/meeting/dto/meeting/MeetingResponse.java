@@ -7,6 +7,7 @@ import java.util.UUID;
 import live.craftmeet.meeting.dto.question.QuestionResponse;
 import live.craftmeet.meeting.dto.stat.StatResponse;
 import live.craftmeet.meeting.model.meeting.Meeting;
+import live.craftmeet.meeting.model.meeting.MeetingSession;
 
 /**
  * A meeting returned to clients, including its settings, session timestamps,
@@ -32,6 +33,7 @@ public record MeetingResponse(
 	 * converted.
 	 */
 	public static MeetingResponse from(Meeting meeting, List<QuestionResponse> questions, StatResponse statResponse) {
+		MeetingSession session = meeting.getSession();
 		return new MeetingResponse(
 				meeting.getId(),
 				meeting.getUserId(),
@@ -40,8 +42,8 @@ public record MeetingResponse(
 				meeting.getRoomCode(),
 				meeting.getSettings().getDuration(),
 				meeting.getSettings().getParticipantCap(),
-				meeting.getSession().getStartTime(),
-				meeting.getSession().getEndTime(),
+				session != null ? session.getStartTime() : null,
+				session != null ? session.getEndTime() : null,
 				meeting.getCreatedAt(),
 				meeting.getUpdatedAt(),
 				questions, statResponse);
