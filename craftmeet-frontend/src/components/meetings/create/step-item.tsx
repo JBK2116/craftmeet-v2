@@ -23,6 +23,7 @@ export function StepItem({
         type="button"
         onClick={onClick}
         disabled={disabled}
+        aria-label={`Step ${index + 1}: ${step.title}`}
         aria-current={state === "active" ? "step" : undefined}
         className={cn(
           "flex w-full items-center justify-center gap-3 rounded-lg border p-2 text-left transition-colors",
