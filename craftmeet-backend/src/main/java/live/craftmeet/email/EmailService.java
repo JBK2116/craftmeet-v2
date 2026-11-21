@@ -106,7 +106,7 @@ public class EmailService {
      */
     public String buildVerificationLink(String token) {
         String baseUrl = isDev() ? "http://localhost:3000" : "https://craftmeet.live";
-        return baseUrl + "/verify?token=" + token;
+        return baseUrl + "/verify-email?token=" + token;
     }
 
     /**

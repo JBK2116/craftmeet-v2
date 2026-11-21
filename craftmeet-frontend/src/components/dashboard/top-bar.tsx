@@ -1,17 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { CircleHelp, Menu, Search, Settings } from "lucide-react";
+import { CircleHelp, LogOut, Menu, Search, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useAuth } from "@/lib/auth/auth-provider";
 import { comingSoon } from "@/lib/coming-soon";
 import { useSearch } from "@/lib/search/search-provider";
-import { CreateMeetingIconButton } from "./create-meeting-button";
 import { SidebarNav } from "./sidebar";
 
 export function TopBar() {
   const { query, setQuery } = useSearch();
+  const { logout } = useAuth();
 
   return (
     <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-border bg-background px-4 sm:px-6">
@@ -65,7 +66,15 @@ export function TopBar() {
           </Button>
         </div>
         <ThemeToggle />
-        <CreateMeetingIconButton />
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label="Logout"
+          onClick={() => logout()}
+          className="text-muted-foreground hover:bg-muted hover:text-foreground"
+        >
+          <LogOut />
+        </Button>
       </div>
     </header>
   );

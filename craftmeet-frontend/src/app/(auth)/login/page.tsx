@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth/auth-provider";
+import { sendVerificationEmail } from "@/lib/api/auth";
 import { ApiError, RateLimitedError } from "@/lib/types/errors";
 
 const loginSchema = z.object({
@@ -26,6 +27,8 @@ export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
+  const [isResending, setIsResending] = useState(false);
 
   useEffect(() => {
     if (window.location.search.includes("error=oauth_failed")) {
@@ -52,7 +55,7 @@ export default function LoginPage() {
         toast.error(err.message);
       } else if (err instanceof ApiError) {
         if (err.code === "FORBIDDEN") {
-          toast.error("Please verify your email before signing in.");
+          setUnverifiedEmail(values.email);
         } else {
           toast.error(err.message);
         }
@@ -61,6 +64,23 @@ export default function LoginPage() {
       }
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  async function handleResend() {
+    if (!unverifiedEmail) return;
+    setIsResending(true);
+    try {
+      await sendVerificationEmail(unverifiedEmail);
+      toast.success("Verification email sent. Check your inbox.");
+    } catch (err) {
+      if (err instanceof ApiError) {
+        toast.error(err.message);
+      } else {
+        toast.error("Could not send a verification email. Please try again.");
+      }
+    } finally {
+      setIsResending(false);
     }
   }
 
@@ -131,6 +151,31 @@ export default function LoginPage() {
               )}
             </Button>
           </form>
+
+          {unverifiedEmail && (
+            <div className="mt-4 rounded-lg bg-destructive/10 px-4 py-3 text-sm">
+              <p className="text-foreground">
+                Your email isn&apos;t verified yet. Resend the verification email to continue.
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleResend}
+                disabled={isResending}
+                className="mt-2"
+              >
+                {isResending ? (
+                  <>
+                    <LoaderCircle className="h-4 w-4 animate-spin" />
+                    Sending…
+                  </>
+                ) : (
+                  "Resend verification email"
+                )}
+              </Button>
+            </div>
+          )}
 
           <div className="my-5 flex items-center gap-3">
             <div className="h-px flex-1 bg-border" />
