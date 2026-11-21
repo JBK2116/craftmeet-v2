@@ -1,17 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import { Plus } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-
-function handleCreate() {
-  // The create-meeting flow is a separate page; not built yet.
-  toast.info("Creating meetings is coming soon.");
-}
 
 export function CreateMeetingButton({ className }: { className?: string }) {
   return (
-    <Button onClick={handleCreate} className={className}>
+    <Button
+      render={<Link href="/meetings/create" />}
+      nativeButton={false}
+      className={className}
+    >
       <Plus />
       Create meeting
     </Button>
