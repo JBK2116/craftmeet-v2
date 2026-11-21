@@ -42,7 +42,7 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
   if (pathname === "/meetings/create") {
     return (
       <div className="min-h-screen bg-background">
-        <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <main className="mx-auto w-full max-w-[90rem] px-4 py-8 sm:px-6 lg:px-10">
           {children}
         </main>
       </div>

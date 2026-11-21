@@ -193,7 +193,7 @@ export function CreateMeetingForm() {
           <FormCard
             title={STEPS[currentIndex].title}
             description={STEPS[currentIndex].subtitle}
-            className="max-h-[calc(100dvh-14rem)]"
+            className="max-h-[calc(100dvh-10rem)]"
             footer={
               <WizardFooter
                 onBack={handleStepBack}
