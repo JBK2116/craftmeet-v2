@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Moon, Sun } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Logo } from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/lib/auth/auth-provider";
@@ -24,26 +25,9 @@ const authRoutes = [
   "/verify-email",
 ];
 
-function ThemeToggle() {
-  function toggle() {
-    const next = !document.documentElement.classList.contains("dark");
-    document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("theme", next ? "dark" : "light");
-  }
-
-  return (
-    <Button
-      variant="ghost"
-      size="icon-sm"
-      onClick={toggle}
-      className="text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-      aria-label="Toggle theme"
-    >
-      <Sun className="hidden dark:block" />
-      <Moon className="block dark:hidden" />
-    </Button>
-  );
-}
+// Authenticated-only pages. Logged-in users get the full account UI only
+// here; on public pages they just see a link into the app.
+const privateRoutes = ["/dashboard"];
 
 export function Navbar() {
   const pathname = usePathname();
@@ -51,21 +35,44 @@ export function Navbar() {
 
   const isLanding = pathname === "/";
   const isAuth = authRoutes.includes(pathname);
+  const isPrivate = privateRoutes.some((route) => pathname.startsWith(route));
 
+  // Private pages render their own app shell (sidebar + top bar), so the
+  // marketing navbar is hidden entirely there.
+  if (isPrivate) return null;
+
+  const dashboardLink = (
+    <Button
+      variant="ghost"
+      size="sm"
+      nativeButton={false}
+      render={<Link href="/dashboard" />}
+      className="text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+    >
+      Dashboard
+    </Button>
+  );
+
+  // On public pages a logged-in user only sees a link into the app; the email
+  // and logout stay confined to authenticated pages.
   const authButtons = user ? (
-    <>
-      <span className="hidden text-sm text-muted-foreground sm:inline">
-        {user.username ?? user.email}
-      </span>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => logout()}
-        className="text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-      >
-        Logout
-      </Button>
-    </>
+    isPrivate ? (
+      <>
+        <span className="hidden text-sm text-muted-foreground sm:inline">
+          {user.username ?? user.email}
+        </span>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => logout()}
+          className="text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+        >
+          Logout
+        </Button>
+      </>
+    ) : (
+      dashboardLink
+    )
   ) : (
     <>
       <Button
@@ -159,7 +166,9 @@ export function Navbar() {
           {isAuth && (
             <div className="flex items-center gap-3">
               <ThemeToggle />
-              {pathname === "/login" ? (
+              {user ? (
+                dashboardLink
+              ) : pathname === "/login" ? (
                 <Button size="sm" nativeButton={false} render={<Link href="/signup" />}>
                   Sign up
                 </Button>
