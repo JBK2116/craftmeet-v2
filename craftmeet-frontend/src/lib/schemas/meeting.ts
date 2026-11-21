@@ -17,6 +17,7 @@ const LIMITS = MEETING_LIMITS;
 
 const promptSchema = z
   .string()
+  .trim()
   .min(LIMITS.prompt.min, { error: "Prompt is required." })
   .max(LIMITS.prompt.max, {
     error: `Prompt must be ${LIMITS.prompt.max} characters or fewer.`,
@@ -24,9 +25,18 @@ const promptSchema = z
 
 const optionSchema = z
   .string()
+  .trim()
   .min(LIMITS.option.min, { error: "Option is required." })
   .max(LIMITS.option.max, {
     error: `Option must be ${LIMITS.option.max} characters or fewer.`,
+  });
+
+const itemSchema = z
+  .string()
+  .trim()
+  .min(LIMITS.option.min, { error: "Item is required." })
+  .max(LIMITS.option.max, {
+    error: `Item must be ${LIMITS.option.max} characters or fewer.`,
   });
 
 const optionalOptionSchema = z.string();
@@ -55,8 +65,8 @@ const longAnswerSchema = z.object({
 const rankedVotingSchema = z.object({
   type: z.literal("ranked_voting"),
   prompt: promptSchema,
-  item1: optionSchema,
-  item2: optionSchema,
+  item1: itemSchema,
+  item2: itemSchema,
   item3: optionalOptionSchema,
   item4: optionalOptionSchema,
 });
@@ -70,6 +80,7 @@ const ratingScaleSchema = z
   })
   .refine((rating) => rating.min < rating.max, {
     error: "Maximum rating must be greater than minimum rating.",
+    path: ["max"],
   });
 
 const yesNoSchema = z.object({
