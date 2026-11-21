@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LoaderCircle } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { TopBar } from "@/components/dashboard/top-bar";
@@ -14,6 +14,7 @@ import { SearchProvider } from "@/lib/search/search-provider";
 export default function PrivateLayout({ children }: { children: ReactNode }) {
   const { status } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -34,6 +35,18 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
 
   if (status === "unauthenticated") {
     return null;
+  }
+
+  // Focused routes (e.g. the create-meeting wizard) render without the app
+  // shell — no sidebar, top bar, or search — since they carry their own header.
+  if (pathname === "/meetings/create") {
+    return (
+      <div className="min-h-screen bg-background">
+        <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+          {children}
+        </main>
+      </div>
+    );
   }
 
   return (
