@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,10 +28,14 @@ export function DeleteAccountDialog({
   onCancel: () => void;
 }) {
   const [typedEmail, setTypedEmail] = useState("");
-
-  useEffect(() => {
+  // Reset the confirmation input whenever the dialog opens/closes or the email
+  // being confirmed changes. Clearing during render (rather than an effect)
+  // avoids the cascading render flagged by react-hooks/set-state-in-effect.
+  const [prevOpenEmail, setPrevOpenEmail] = useState({ open, email });
+  if (prevOpenEmail.open !== open || prevOpenEmail.email !== email) {
+    setPrevOpenEmail({ open, email });
     setTypedEmail("");
-  }, [open, email]);
+  }
 
   const confirmed = typedEmail === email;
 
