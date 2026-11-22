@@ -18,6 +18,7 @@ type AuthContextValue = {
   status: AuthStatus;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (user: User) => void;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -65,8 +66,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setStatus("unauthenticated");
   }, []);
 
+  const updateUser = useCallback((u: User) => setUser(u), []);
+
   return (
-    <AuthContext.Provider value={{ user, status, login, logout }}>
+    <AuthContext.Provider value={{ user, status, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
