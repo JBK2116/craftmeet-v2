@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import live.craftmeet.meeting.dto.meeting.MeetingRequest;
 import live.craftmeet.meeting.dto.meeting.MeetingResponse;
+import live.craftmeet.meeting.dto.stat.StatLifeTimeResponse;
 import live.craftmeet.meeting.service.MeetingService;
 import live.craftmeet.user.utils.Constants;
 
@@ -63,6 +64,12 @@ public class MeetingController {
 			@RequestAttribute(Constants.USER_ID_ATTRIBUTE) UUID userId) {
 		List<MeetingResponse> meetingResponses = meetingService.getMeetings(userId);
 		return ResponseEntity.ok(meetingResponses);
+	}
+
+	@GetMapping("/stats")
+	public ResponseEntity<StatLifeTimeResponse> getStats(@RequestAttribute(Constants.USER_ID_ATTRIBUTE) UUID userId) {
+		StatLifeTimeResponse statLifeTimeResponse = meetingService.getStats(userId);
+		return ResponseEntity.ok(statLifeTimeResponse);
 	}
 
 }

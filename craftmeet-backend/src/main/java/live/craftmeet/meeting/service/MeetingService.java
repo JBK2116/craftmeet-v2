@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import live.craftmeet.meeting.dto.meeting.MeetingRequest;
 import live.craftmeet.meeting.dto.meeting.MeetingResponse;
 import live.craftmeet.meeting.dto.question.QuestionResponse;
+import live.craftmeet.meeting.dto.stat.StatLifeTimeResponse;
 import live.craftmeet.meeting.dto.stat.StatResponse;
 import live.craftmeet.meeting.exception.MeetingNotEditableError;
 import live.craftmeet.meeting.exception.MeetingNotFoundError;
@@ -93,6 +94,24 @@ public class MeetingService {
 					statsByMeeting.get(meeting.getId())));
 		}
 		return meetingResponses;
+	}
+
+	@Transactional(readOnly = true)
+	public StatLifeTimeResponse getStats(UUID userId) {
+		List<Meeting> meetings = meetingRepository.findAllByUserId(userId);
+		if (meetings.isEmpty()) {
+			return new StatLifeTimeResponse(0, 0, 0);
+		}
+		List<UUID> meetingIds = meetings.stream().map(Meeting::getId).toList();
+		int totalParticipants = 0;
+		int totalQuestionsAsked = 0;
+		int totalResponsesReceived = 0;
+		for (StatResponse stats : statService.getStatsByMeetingId(meetingIds).values()) {
+			totalParticipants += stats.totalParticipants();
+			totalQuestionsAsked += stats.totalQuestionsAsked();
+			totalResponsesReceived += stats.totalResponsesReceived();
+		}
+		return new StatLifeTimeResponse(totalParticipants, totalQuestionsAsked, totalResponsesReceived);
 	}
 
 	/**
