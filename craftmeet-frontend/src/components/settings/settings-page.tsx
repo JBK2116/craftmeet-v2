@@ -25,6 +25,7 @@ export function SettingsPage() {
   const deleteAllMeetings = useDeleteAllMeetings();
   const [usernameOpen, setUsernameOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
+  const [meetingsDeleteOpen, setMeetingsDeleteOpen] = useState(false);
 
   if (!user) return null;
 
@@ -49,9 +50,14 @@ export function SettingsPage() {
       <DangerZone
         isDeletingMeetings={deleteAllMeetings.isPending}
         isDeletingAccount={deleteAccount.isPending}
+        confirmOpen={meetingsDeleteOpen}
+        onConfirmOpenChange={setMeetingsDeleteOpen}
         onDeleteAllMeetings={() =>
           deleteAllMeetings.mutate(undefined, {
-            onSuccess: () => toast.success("All meetings deleted"),
+            onSuccess: () => {
+              toast.success("All meetings deleted");
+              setMeetingsDeleteOpen(false);
+            },
           })
         }
         onDeleteAccount={() => setAccountOpen(true)}

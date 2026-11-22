@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,14 +16,16 @@ export function DangerZone({
   isDeletingAccount,
   onDeleteAllMeetings,
   onDeleteAccount,
+  confirmOpen,
+  onConfirmOpenChange,
 }: {
   isDeletingMeetings: boolean;
   isDeletingAccount: boolean;
   onDeleteAllMeetings: () => void;
   onDeleteAccount: () => void;
+  confirmOpen: boolean;
+  onConfirmOpenChange: (open: boolean) => void;
 }) {
-  const [confirmOpen, setConfirmOpen] = useState(false);
-
   return (
     <section className="border-t border-border pt-6">
       <h2 className="font-semibold text-destructive">Danger zone</h2>
@@ -37,7 +38,7 @@ export function DangerZone({
               Permanently delete every meeting you have created.
             </p>
           </div>
-          <Button variant="outline" onClick={() => setConfirmOpen(true)}>
+          <Button variant="outline" onClick={() => onConfirmOpenChange(true)}>
             Delete all meetings
           </Button>
         </div>
@@ -67,7 +68,7 @@ export function DangerZone({
         </div>
       </div>
 
-      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+      <Dialog open={confirmOpen} onOpenChange={onConfirmOpenChange}>
         <DialogContent showCloseButton={false}>
           <DialogHeader>
             <DialogTitle>Delete all meetings?</DialogTitle>
@@ -79,7 +80,7 @@ export function DangerZone({
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={() => setConfirmOpen(false)}
+              onClick={() => onConfirmOpenChange(false)}
               disabled={isDeletingMeetings}
             >
               Cancel

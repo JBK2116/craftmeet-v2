@@ -7,6 +7,7 @@ import {
   type UseMutationResult,
   type UseQueryResult,
 } from "@tanstack/react-query";
+import { toast } from "sonner";
 import * as meetingsApi from "@/lib/api/meetings";
 import * as usersApi from "@/lib/api/users";
 import { useAuth } from "@/lib/auth/auth-provider";
@@ -36,12 +37,14 @@ export function useUpdateUsername(): UseMutationResult<
     mutationFn: ({ id, newUsername }) =>
       usersApi.updateUsername(id, newUsername),
     onSuccess: (user) => updateUser(user),
+    onError: (err) => toast.error(err.message),
   });
 }
 
 export function useDeleteAccount(): UseMutationResult<void, ApiError, string> {
   return useMutation<void, ApiError, string>({
     mutationFn: usersApi.deleteUser,
+    onError: (err) => toast.error(err.message),
   });
 }
 
@@ -57,5 +60,6 @@ export function useDeleteAllMeetings(): UseMutationResult<
       void queryClient.invalidateQueries({ queryKey: meetingsKeys.all });
       void queryClient.invalidateQueries({ queryKey: statsKeys.all });
     },
+    onError: (err) => toast.error(err.message),
   });
 }
