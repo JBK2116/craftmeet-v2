@@ -139,3 +139,9 @@ export type MeetingRequest = {
   participantCap: number;
   questions: MeetingQuestionRequest[];
 };
+
+export type StatLifeTime = {
+  totalParticipants: number;
+  totalQuestionsAsked: number;
+  totalResponsesReceived: number;
+};

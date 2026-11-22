@@ -1,5 +1,5 @@
 import { apiError, apiFetch } from "@/lib/api/client";
-import type { Meeting, MeetingRequest } from "@/lib/types/meeting";
+import type { Meeting, MeetingRequest, StatLifeTime } from "@/lib/types/meeting";
 
 export async function getMeetings(): Promise<Meeting[]> {
   const res = await apiFetch("/meetings");
@@ -38,5 +38,16 @@ export async function updateMeeting(
 
 export async function deleteMeeting(id: string): Promise<void> {
   const res = await apiFetch(`/meetings/${id}`, { method: "DELETE" });
+  if (!res.ok) throw await apiError(res);
+}
+
+export async function getStats(): Promise<StatLifeTime> {
+  const res = await apiFetch("/stats");
+  if (!res.ok) throw await apiError(res);
+  return (await res.json()) as StatLifeTime;
+}
+
+export async function deleteAllMeetings(): Promise<void> {
+  const res = await apiFetch("/meetings", { method: "DELETE" });
   if (!res.ok) throw await apiError(res);
 }
