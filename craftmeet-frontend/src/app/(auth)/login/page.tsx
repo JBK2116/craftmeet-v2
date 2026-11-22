@@ -56,8 +56,10 @@ export default function LoginPage() {
       } else if (err instanceof ApiError) {
         if (err.code === "FORBIDDEN") {
           setUnverifiedEmail(values.email);
+        } else if (err.status >= 500) {
+          toast.error("Something went wrong. Please try again.");
         } else {
-          toast.error(err.message);
+          toast.error("Invalid email or password.");
         }
       } else {
         toast.error("An unexpected error occurred. Please try again.");

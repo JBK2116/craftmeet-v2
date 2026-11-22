@@ -26,6 +26,7 @@ import java.time.Instant;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -80,21 +81,25 @@ class SendVerificationEmailE2ETest {
     }
 
     @Test
-    void sendVerificationEmail_rejectsUnknownEmail() throws Exception {
+    void sendVerificationEmail_isSilentForUnknownEmail() throws Exception {
         mockMvc.perform(post("/verify")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(sendVerifyEmailJson("unknown@example.com")))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
+
+        verify(emailService, never()).sendVerificationEmail(anyString(), anyString());
     }
 
     @Test
-    void sendVerificationEmail_rejectsVerifiedUser() throws Exception {
+    void sendVerificationEmail_isSilentForVerifiedUser() throws Exception {
         createUser(EMAIL, true);
 
         mockMvc.perform(post("/verify")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(sendVerifyEmailJson(EMAIL)))
-                .andExpect(status().isConflict());
+                .andExpect(status().isOk());
+
+        verify(emailService, never()).sendVerificationEmail(anyString(), anyString());
     }
 
     @Test

@@ -192,11 +192,11 @@ class UserServiceTest {
     }
 
     @Test
-    void authenticate_throwsWhenUserNotFound() {
+    void authenticate_throwsWhenEmailNotFound() {
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.authenticate(EMAIL, RAW_PASSWORD))
-                .isInstanceOf(UserNotFoundException.class);
+                .isInstanceOf(UserInvalidCredentialsException.class);
     }
 
     @Test

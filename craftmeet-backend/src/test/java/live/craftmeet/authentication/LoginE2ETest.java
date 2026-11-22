@@ -98,11 +98,11 @@ class LoginE2ETest {
     }
 
     @Test
-    void login_rejectsUnknownUser() throws Exception {
+    void login_rejectsUnknownEmail() throws Exception {
         mockMvc.perform(post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(loginJson(EMAIL, PASSWORD)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
 
     private void createUser(String email, String password, boolean verified) {

@@ -13,6 +13,9 @@ import live.craftmeet.authentication.jwt.InvalidJwtException;
 import live.craftmeet.authentication.jwt.JwtType;
 import live.craftmeet.email.EmailService;
 import live.craftmeet.user.dto.UserResponse;
+import live.craftmeet.user.exception.UserAlreadyVerifiedException;
+import live.craftmeet.user.exception.UserNotFoundException;
+import live.craftmeet.user.exception.UserNotVerifiedException;
 import live.craftmeet.user.service.UserService;
 
 @Service
@@ -51,8 +54,12 @@ public class AuthService {
 
 	@Transactional
 	public void sendVerificationEmail(String email) {
-		String rawToken = verifyEmailTokenService.generate(email);
-		emailService.sendVerificationEmail(email, rawToken);
+		try {
+			String rawToken = verifyEmailTokenService.generate(email);
+			emailService.sendVerificationEmail(email, rawToken);
+		} catch (UserNotFoundException | UserAlreadyVerifiedException e) {
+			// Never reveal whether the email is registered or verified.
+		}
 	}
 
 	@Transactional
@@ -63,8 +70,12 @@ public class AuthService {
 
 	@Transactional
 	public void sendResetPasswordEmail(String email) {
-		String rawToken = resetPasswordTokenService.generate(email);
-		emailService.sendResetPasswordEmail(email, rawToken);
+		try {
+			String rawToken = resetPasswordTokenService.generate(email);
+			emailService.sendResetPasswordEmail(email, rawToken);
+		} catch (UserNotFoundException | UserNotVerifiedException e) {
+			// Never reveal whether the email is registered or verified.
+		}
 	}
 
 	@Transactional

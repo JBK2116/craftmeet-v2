@@ -204,7 +204,7 @@ public class UserService {
 	 *                                             verified
 	 */
 	public UserResponse authenticate(String email, String password) {
-		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
+		User user = userRepository.findByEmail(email).orElseThrow(UserInvalidCredentialsException::new);
 
 		if (!cryptoService.checkPassword(password, user.getPassword())) {
 			throw new UserInvalidCredentialsException();

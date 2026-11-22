@@ -25,6 +25,7 @@ import java.time.Instant;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -80,21 +81,25 @@ class SendResetPasswordEmailE2ETest {
     }
 
     @Test
-    void sendResetPasswordEmail_rejectsUnknownEmail() throws Exception {
+    void sendResetPasswordEmail_isSilentForUnknownEmail() throws Exception {
         mockMvc.perform(post("/forgot-password")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(resetPasswordJson("unknown@example.com")))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
+
+        verify(emailService, never()).sendResetPasswordEmail(anyString(), anyString());
     }
 
     @Test
-    void sendResetPasswordEmail_rejectsUnverifiedUser() throws Exception {
+    void sendResetPasswordEmail_isSilentForUnverifiedUser() throws Exception {
         createUser(EMAIL, false);
 
         mockMvc.perform(post("/forgot-password")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(resetPasswordJson(EMAIL)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isOk());
+
+        verify(emailService, never()).sendResetPasswordEmail(anyString(), anyString());
     }
 
     @Test
