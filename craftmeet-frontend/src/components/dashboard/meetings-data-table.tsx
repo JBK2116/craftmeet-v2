@@ -4,10 +4,10 @@ import { useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "cn";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useDeleteMeeting } from "@/lib/hooks/use-meetings";
 import type { Meeting } from "@/lib/types/meeting";
 import { DeleteMeetingDialog } from "./delete-meeting-dialog";
+import { MeetingCard } from "./meeting-card";
 import { MeetingDataRow } from "./meeting-data-row";
 
 type SortKey = "title" | "createdAt" | "participants" | "responses";
@@ -95,14 +95,26 @@ export function MeetingsDataTable({ meetings }: { meetings: Meeting[] }) {
 
   return (
     <>
-      <div className="overflow-hidden rounded-xl border border-border bg-card">
+      {/* Mobile: full-width stacked cards (avoids horizontal scroll). */}
+      <div className="space-y-3 md:hidden">
+        {sorted.map((meeting) => (
+          <MeetingCard
+            key={meeting.id}
+            meeting={meeting}
+            onDelete={() => setPending(meeting)}
+          />
+        ))}
+        <p className="px-1 text-xs text-muted-foreground">
+          {meetings.length} result{meetings.length === 1 ? "" : "s"}
+        </p>
+      </div>
+
+      {/* Desktop: sortable table. */}
+      <div className="hidden overflow-hidden rounded-xl border border-border bg-card md:block">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th className="w-10 px-3 py-3">
-                  <Checkbox aria-label="Select all" />
-                </th>
                 <SortHeader label="Meeting" sortKey="title" sort={sort} onSort={toggleSort} />
                 <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">
                   Status

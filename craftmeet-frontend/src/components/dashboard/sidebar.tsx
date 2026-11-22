@@ -18,7 +18,17 @@ const mainNav: NavItem[] = [
   { label: "Templates", icon: LayoutTemplate },
 ];
 
-function NavItemLink({ item, active }: { item: NavItem; active: boolean }) {
+const settingsItem: NavItem = { label: "Settings", icon: Settings };
+
+function NavItemLink({
+  item,
+  active,
+  onNavigate,
+}: {
+  item: NavItem;
+  active: boolean;
+  onNavigate?: () => void;
+}) {
   const className = cn(
     "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
     active
@@ -38,21 +48,39 @@ function NavItemLink({ item, active }: { item: NavItem; active: boolean }) {
         href={item.href}
         aria-current={active ? "page" : undefined}
         className={className}
+        onClick={onNavigate}
       >
         {content}
       </Link>
     );
   }
   return (
-    <button type="button" className={className} onClick={() => comingSoon(item.label)}>
+    <button
+      type="button"
+      className={className}
+      onClick={() => {
+        onNavigate?.();
+        comingSoon(item.label);
+      }}
+    >
       {content}
     </button>
   );
 }
 
-export function SidebarNav() {
+export function SidebarNav({
+  variant = "sidebar",
+  onNavigate,
+}: {
+  variant?: "sidebar" | "sheet";
+  onNavigate?: () => void;
+}) {
+  // In the mobile sheet Settings is grouped with the other items (no pinned
+  // footer), so it isn't stranded at the bottom of a full-height panel.
+  const items = variant === "sheet" ? [...mainNav, settingsItem] : mainNav;
+
   return (
-    <div className="flex h-full flex-col">
+    <div className={cn("flex flex-col", variant === "sidebar" && "h-full")}>
       <Link
         href="/"
         className="flex items-center gap-2.5 px-5 py-4 text-foreground transition-opacity hover:opacity-80"
@@ -61,15 +89,22 @@ export function SidebarNav() {
         <span className="text-sm font-semibold tracking-tight">Craftmeet</span>
       </Link>
 
-      <nav className="flex flex-1 flex-col gap-0.5 px-3">
-        {mainNav.map((item) => (
-          <NavItemLink key={item.label} item={item} active={item.label === "Meetings"} />
+      <nav className="flex flex-col gap-0.5 px-3 py-3">
+        {items.map((item) => (
+          <NavItemLink
+            key={item.label}
+            item={item}
+            active={item.label === "Meetings"}
+            onNavigate={onNavigate}
+          />
         ))}
       </nav>
 
-      <div className="border-t border-border px-3 py-3">
-        <NavItemLink item={{ label: "Settings", icon: Settings }} active={false} />
-      </div>
+      {variant === "sidebar" ? (
+        <div className="mt-auto border-t border-border px-3 py-3">
+          <NavItemLink item={settingsItem} active={false} onNavigate={onNavigate} />
+        </div>
+      ) : null}
     </div>
   );
 }

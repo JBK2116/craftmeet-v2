@@ -70,10 +70,10 @@ export default function HomePage() {
             <div className="h-150 w-150 rounded-full bg-primary/5 blur-3xl" />
           </div>
 
-          <h1 className="relative max-w-3xl text-5xl leading-[1.08] tracking-tight text-foreground sm:text-6xl lg:text-7xl">
+          <h1 className="relative max-w-3xl text-4xl leading-[1.08] tracking-tight text-foreground sm:text-6xl lg:text-7xl">
             Craftmeet
           </h1>
-          <p className="relative max-w-3xl text-3xl leading-[1.15] tracking-tight text-foreground/80 sm:text-4xl lg:text-5xl">
+          <p className="relative max-w-3xl text-2xl leading-[1.15] tracking-tight text-foreground/80 sm:text-4xl lg:text-5xl">
             Meetings that{" "}
             <span className="inline-block font-black text-primary">
               extract

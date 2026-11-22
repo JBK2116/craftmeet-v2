@@ -68,7 +68,7 @@ export function ResetPasswordForm() {
     return (
       <main className="flex min-h-screen items-center justify-center bg-background px-4 py-16">
         <div className="w-full max-w-md space-y-3">
-          <div className="rounded-2xl border border-border bg-card px-8 py-9 text-center">
+          <div className="rounded-2xl border border-border bg-card px-6 sm:px-8 py-9 text-center">
             <div className="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-destructive/10">
               <CircleAlert className="h-5 w-5 text-destructive" />
             </div>
@@ -94,7 +94,7 @@ export function ResetPasswordForm() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4 py-16">
       <div className="w-full max-w-md space-y-3">
-        <div className="rounded-2xl border border-border bg-card px-8 py-9 shadow-sm">
+        <div className="rounded-2xl border border-border bg-card px-6 sm:px-8 py-9 shadow-sm">
           <h1 className="mb-1 text-center text-2xl font-semibold tracking-tight text-foreground">
             Reset your password
           </h1>
@@ -154,7 +154,7 @@ export function ResetPasswordForm() {
           </form>
         </div>
 
-        <div className="rounded-xl border border-border bg-card px-8 py-4 text-center text-sm text-muted-foreground shadow-sm">
+        <div className="rounded-xl border border-border bg-card px-6 sm:px-8 py-4 text-center text-sm text-muted-foreground shadow-sm">
           Remember your password?
           <Link
             href="/login"

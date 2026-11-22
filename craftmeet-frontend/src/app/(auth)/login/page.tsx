@@ -87,7 +87,7 @@ export default function LoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4 py-16">
       <div className="w-full max-w-[420px] space-y-3">
-        <div className="rounded-2xl border border-border bg-card px-8 py-9">
+        <div className="rounded-2xl border border-border bg-card px-6 sm:px-8 py-9">
           <h1 className="mb-1 text-center text-[1.4rem] font-semibold tracking-tight text-foreground">
             Welcome back
           </h1>
@@ -186,7 +186,7 @@ export default function LoginPage() {
           <GoogleButton disabled={isSubmitting} />
         </div>
 
-        <div className="rounded-xl border border-border bg-card px-8 py-4 text-center text-sm text-muted-foreground">
+        <div className="rounded-xl border border-border bg-card px-6 sm:px-8 py-4 text-center text-sm text-muted-foreground">
           Don&apos;t have an account?
           <Link
             href="/signup"

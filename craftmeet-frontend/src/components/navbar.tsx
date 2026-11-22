@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
@@ -9,12 +10,23 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/lib/auth/auth-provider";
 
-const landingLinks = [
+type NavLink = { title: string; href: string };
+
+const landingLinks: NavLink[] = [
   { title: "How it Works", href: "#how-it-works" },
   { title: "Features", href: "#features" },
   { title: "Pricing", href: "/pricing" },
   { title: "Privacy", href: "/privacy" },
   { title: "Join Meeting", href: "#join-meeting" },
+];
+
+// Links for the non-landing marketing pages (which have no landing anchors),
+// shown in the mobile menu.
+const publicLinks: NavLink[] = [
+  { title: "Pricing", href: "/pricing" },
+  { title: "Privacy", href: "/privacy" },
+  { title: "Terms", href: "/terms" },
+  { title: "Contact", href: "/contact" },
 ];
 
 const authRoutes = [
@@ -28,6 +40,58 @@ const authRoutes = [
 // Authenticated-only pages. Logged-in users get the full account UI only
 // here; on public pages they just see a link into the app.
 const privateRoutes = ["/dashboard"];
+
+function MobileMenu({
+  links,
+  authButtons,
+}: {
+  links: NavLink[];
+  authButtons: ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="md:hidden">
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger
+          render={
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Open menu"
+              className="text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+            />
+          }
+        >
+          <Menu />
+        </SheetTrigger>
+        <SheetContent side="right" className="w-72 border-border bg-background p-6">
+          <SheetTitle className="sr-only">Menu</SheetTitle>
+          <div className="mt-8 flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
+              {links.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setOpen(false)}
+                  className="text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground"
+                >
+                  {link.title}
+                </Link>
+              ))}
+            </div>
+            <div
+              className="flex flex-col gap-2 border-t border-border pt-4"
+              onClick={() => setOpen(false)}
+            >
+              {authButtons}
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+    </div>
+  );
+}
 
 export function Navbar() {
   const pathname = usePathname();
@@ -78,7 +142,8 @@ export function Navbar() {
       <Button
         variant="ghost"
         size="sm"
-        nativeButton={false} render={<Link href="/login" />}
+        nativeButton={false}
+        render={<Link href="/login" />}
         className="text-muted-foreground hover:bg-accent hover:text-accent-foreground"
       >
         Log in
@@ -122,44 +187,7 @@ export function Navbar() {
                 {authButtons}
               </div>
 
-              <div className="md:hidden">
-                <Sheet>
-                  <SheetTrigger
-                    render={
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        aria-label="Open menu"
-                        className="text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                      />
-                    }
-                  >
-                    <Menu />
-                  </SheetTrigger>
-                  <SheetContent
-                    side="right"
-                    className="w-72 border-border bg-background p-6"
-                  >
-                    <SheetTitle className="sr-only">Menu</SheetTitle>
-                    <div className="mt-8 flex flex-col gap-6">
-                      <div className="flex flex-col gap-4">
-                        {landingLinks.map((link) => (
-                          <Link
-                            key={link.href}
-                            href={link.href}
-                            className="text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground"
-                          >
-                            {link.title}
-                          </Link>
-                        ))}
-                      </div>
-                      <div className="flex flex-col gap-2 border-t border-border pt-4">
-                        {authButtons}
-                      </div>
-                    </div>
-                  </SheetContent>
-                </Sheet>
-              </div>
+              <MobileMenu links={landingLinks} authButtons={authButtons} />
             </>
           )}
 
@@ -176,7 +204,8 @@ export function Navbar() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  nativeButton={false} render={<Link href="/login" />}
+                  nativeButton={false}
+                  render={<Link href="/login" />}
                   className="text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 >
                   Log in
@@ -186,10 +215,14 @@ export function Navbar() {
           )}
 
           {!isLanding && !isAuth && (
-            <div className="flex items-center gap-3">
-              <ThemeToggle />
-              {authButtons}
-            </div>
+            <>
+              <div className="hidden items-center gap-3 md:flex">
+                <ThemeToggle />
+                {authButtons}
+              </div>
+
+              <MobileMenu links={publicLinks} authButtons={authButtons} />
+            </>
           )}
         </nav>
       </header>

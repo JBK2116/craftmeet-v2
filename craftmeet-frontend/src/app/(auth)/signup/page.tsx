@@ -67,7 +67,7 @@ export default function SignupPage() {
         return (
             <main className="flex min-h-screen items-center justify-center bg-background px-4 py-16">
                 <div className="w-full max-w-md space-y-3">
-                    <div className="rounded-2xl border border-border bg-card px-8 py-9 text-center">
+                    <div className="rounded-2xl border border-border bg-card px-6 sm:px-8 py-9 text-center">
                         <div
                             className="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10">
                             <MailCheck className="h-5 w-5 text-primary"/>
@@ -87,7 +87,7 @@ export default function SignupPage() {
     return (
         <main className="flex min-h-screen items-center justify-center bg-background px-4 py-16">
             <div className="w-full max-w-md space-y-3">
-                <div className="rounded-2xl border border-border bg-card px-8 py-9 shadow-sm">
+                <div className="rounded-2xl border border-border bg-card px-6 sm:px-8 py-9 shadow-sm">
                     <h1 className="mb-1 text-center text-2xl font-semibold tracking-tight text-foreground">
                         Create your account
                     </h1>
@@ -170,7 +170,7 @@ export default function SignupPage() {
                 </div>
 
                 <div
-                    className="rounded-xl border border-border bg-card px-8 py-4 text-center text-sm text-muted-foreground shadow-sm">
+                    className="rounded-xl border border-border bg-card px-6 sm:px-8 py-4 text-center text-sm text-muted-foreground shadow-sm">
                     Already have an account?
                     <Link
                         href="/login"

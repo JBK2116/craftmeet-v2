@@ -1,20 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { comingSoon } from "@/lib/coming-soon";
 import { formatRelativeTime } from "@/lib/format";
 import { deriveStatus } from "@/lib/meeting";
 import type { Meeting } from "@/lib/types/meeting";
+import { MeetingActionsMenu } from "./meeting-actions-menu";
 import { MeetingStatusBadge } from "./meeting-status-badge";
 
 export function MeetingDataRow({
@@ -24,14 +13,10 @@ export function MeetingDataRow({
   meeting: Meeting;
   onDelete: () => void;
 }) {
-  const router = useRouter();
   const status = deriveStatus(meeting);
 
   return (
     <tr className="border-b border-border transition-colors last:border-0 hover:bg-muted/40">
-      <td className="px-3 py-3">
-        <Checkbox aria-label={`Select ${meeting.title}`} />
-      </td>
       <td className="px-4 py-3">
         <div className="font-medium text-foreground">{meeting.title}</div>
         <div className="font-mono text-xs tracking-widest text-muted-foreground">
@@ -51,36 +36,7 @@ export function MeetingDataRow({
         {formatRelativeTime(meeting.createdAt)}
       </td>
       <td className="px-4 py-3 text-right">
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                aria-label={`Actions for ${meeting.title}`}
-              />
-            }
-          >
-            <MoreHorizontal />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {status === "draft" ? (
-              <DropdownMenuItem
-                onClick={() => router.push(`/meetings/edit?id=${meeting.id}`)}
-              >
-                Edit
-              </DropdownMenuItem>
-            ) : (
-              <DropdownMenuItem onClick={() => comingSoon("Summaries")}>
-                View summary
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive" onClick={onDelete}>
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <MeetingActionsMenu meeting={meeting} onDelete={onDelete} />
       </td>
     </tr>
   );

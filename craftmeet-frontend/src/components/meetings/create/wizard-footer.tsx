@@ -19,7 +19,7 @@ export function WizardFooter({
   submitting?: boolean;
 }) {
   return (
-    <footer className="sticky bottom-0 flex items-center gap-3 border-t border-border bg-card p-6">
+    <footer className="flex items-center gap-3 border-t border-border bg-card p-6">
       {backHidden ? null : (
         <Button type="button" variant="outline" onClick={onBack}>
           Back

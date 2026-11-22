@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { CircleHelp, LogOut, Menu, Search, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,11 +14,12 @@ import { SidebarNav } from "./sidebar";
 export function TopBar() {
   const { query, setQuery } = useSearch();
   const { logout } = useAuth();
+  const [navOpen, setNavOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-border bg-background px-4 sm:px-6">
       <div className="md:hidden">
-        <Sheet>
+        <Sheet open={navOpen} onOpenChange={setNavOpen}>
           <SheetTrigger
             render={
               <Button variant="ghost" size="icon-sm" aria-label="Open navigation" />
@@ -25,21 +27,21 @@ export function TopBar() {
           >
             <Menu />
           </SheetTrigger>
-          <SheetContent side="left" className="w-64 border-border bg-background p-0">
+          <SheetContent side="left" className="w-full border-border bg-background p-0">
             <SheetTitle className="sr-only">Navigation</SheetTitle>
-            <SidebarNav />
+            <SidebarNav variant="sheet" onNavigate={() => setNavOpen(false)} />
           </SheetContent>
         </Sheet>
       </div>
 
-      <div className="relative w-full max-w-md">
+      <div className="relative w-full min-w-0 max-w-md">
         <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search meetings"
-          className="h-9 w-full rounded-lg border border-transparent bg-muted pr-3 pl-9 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/50"
+          className="h-9 w-full min-w-0 rounded-lg border border-transparent bg-muted pr-3 pl-9 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/50"
         />
       </div>
 
