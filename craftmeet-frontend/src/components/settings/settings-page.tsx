@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { AccountSection } from "@/components/settings/account-section";
 import { DangerZone } from "@/components/settings/danger-zone";
 import { DeleteAccountDialog } from "@/components/settings/delete-account-dialog";
 import { EditUsernameDialog } from "@/components/settings/edit-username-dialog";
 import { LifetimeStats } from "@/components/settings/lifetime-stats";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth/auth-provider";
 import {
   useDeleteAccount,
@@ -31,11 +33,23 @@ export function SettingsPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground">
-          Manage your account, lifetime stats, and data.
-        </p>
+      <header className="flex items-center gap-3">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="rounded-full"
+          onClick={() => router.push("/dashboard")}
+          aria-label="Back to dashboard"
+        >
+          <ArrowLeft />
+        </Button>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+          <p className="text-sm text-muted-foreground">
+            Manage your account, lifetime stats, and data.
+          </p>
+        </div>
       </header>
 
       <LifetimeStats
