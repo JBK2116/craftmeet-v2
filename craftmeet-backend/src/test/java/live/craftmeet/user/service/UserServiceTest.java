@@ -3,6 +3,7 @@ package live.craftmeet.user.service;
 import live.craftmeet.crypto.CryptoService;
 import live.craftmeet.user.dto.UserResponse;
 import live.craftmeet.user.exception.UserAlreadyExistsException;
+import live.craftmeet.user.exception.UserForbiddenException;
 import live.craftmeet.user.exception.UserInvalidCredentialsException;
 import live.craftmeet.user.exception.UserNotFoundException;
 import live.craftmeet.user.exception.UserNotVerifiedException;
@@ -133,7 +134,7 @@ class UserServiceTest {
         User existing = user(EMAIL, "oldUsername", ENCODED_PASSWORD, true);
         when(userRepository.findById(USER_ID)).thenReturn(Optional.of(existing));
 
-        UserResponse response = userService.updateUsername(USER_ID, "newUsername");
+        UserResponse response = userService.updateUsername(USER_ID, USER_ID, "newUsername");
 
         assertThat(response.username()).isEqualTo("newUsername");
         assertThat(existing.getUsername()).isEqualTo("newUsername");
@@ -143,8 +144,18 @@ class UserServiceTest {
     void updateUsername_throwsWhenUserNotFound() {
         when(userRepository.findById(USER_ID)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> userService.updateUsername(USER_ID, "newUsername"))
+        assertThatThrownBy(() -> userService.updateUsername(USER_ID, USER_ID, "newUsername"))
                 .isInstanceOf(UserNotFoundException.class);
+    }
+
+    @Test
+    void updateUsername_throwsWhenUpdatingAnotherUser() {
+        UUID otherId = UUID.randomUUID();
+
+        assertThatThrownBy(() -> userService.updateUsername(otherId, USER_ID, "newUsername"))
+                .isInstanceOf(UserForbiddenException.class);
+
+        verify(userRepository, never()).findById(any(UUID.class));
     }
 
     @Test

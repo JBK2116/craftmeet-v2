@@ -152,8 +152,12 @@ public class UserService {
 	 * @return the updated user's account information
 	 */
 	@Transactional
-	public UserResponse updateUsername(UUID userId, String username) {
-		User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+	public UserResponse updateUsername(UUID requestParamId, UUID userId, String username) {
+		if (!requestParamId.equals(userId)) {
+			throw new UserForbiddenException(requestParamId);
+		}
+		User user = userRepository.findById(requestParamId)
+				.orElseThrow(() -> new UserNotFoundException(requestParamId));
 		user.setUsername(username);
 
 		return UserResponse.from(user);
