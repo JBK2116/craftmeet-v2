@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   CalendarDays,
   LayoutTemplate,
@@ -18,7 +19,7 @@ const mainNav: NavItem[] = [
   { label: "Templates", icon: LayoutTemplate },
 ];
 
-const settingsItem: NavItem = { label: "Settings", icon: Settings };
+const settingsItem: NavItem = { label: "Settings", icon: Settings, href: "/settings" };
 
 function NavItemLink({
   item,
@@ -78,6 +79,7 @@ export function SidebarNav({
   // In the mobile sheet Settings is grouped with the other items (no pinned
   // footer), so it isn't stranded at the bottom of a full-height panel.
   const items = variant === "sheet" ? [...mainNav, settingsItem] : mainNav;
+  const pathname = usePathname();
 
   return (
     <div className={cn("flex flex-col", variant === "sidebar" && "h-full")}>
@@ -94,7 +96,7 @@ export function SidebarNav({
           <NavItemLink
             key={item.label}
             item={item}
-            active={item.label === "Meetings"}
+            active={item.href != null && pathname === item.href}
             onNavigate={onNavigate}
           />
         ))}
@@ -102,7 +104,11 @@ export function SidebarNav({
 
       {variant === "sidebar" ? (
         <div className="mt-auto border-t border-border px-3 py-3">
-          <NavItemLink item={settingsItem} active={false} onNavigate={onNavigate} />
+          <NavItemLink
+            item={settingsItem}
+            active={settingsItem.href != null && pathname === settingsItem.href}
+            onNavigate={onNavigate}
+          />
         </div>
       ) : null}
     </div>
