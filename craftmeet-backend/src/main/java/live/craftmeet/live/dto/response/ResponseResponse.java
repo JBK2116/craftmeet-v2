@@ -5,7 +5,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import live.craftmeet.live.model.*;
+import live.craftmeet.live.model.response.*;
 
 /**
  * Common contract for every response returned to clients. Jackson polymorphic

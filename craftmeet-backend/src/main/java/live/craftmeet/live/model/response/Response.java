@@ -1,11 +1,14 @@
-package live.craftmeet.live.model;
+package live.craftmeet.live.model.response;
 
 import java.util.UUID;
 
 import jakarta.persistence.*;
 
 import live.craftmeet.persistence.BaseEntity;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Base entity for every response type in a meeting. Uses single-table

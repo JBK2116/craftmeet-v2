@@ -1,11 +1,14 @@
-package live.craftmeet.live.model;
+package live.craftmeet.live.model.response;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 import live.craftmeet.meeting.utils.Constants;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * A free-text response to a long-answer question, bounded by the configured
