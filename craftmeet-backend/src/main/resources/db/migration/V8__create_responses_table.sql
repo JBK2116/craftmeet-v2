@@ -1,0 +1,28 @@
+CREATE TABLE responses (
+    id              UUID          NOT NULL,
+    response_type   VARCHAR(31)   NOT NULL,
+    question_id     UUID          NOT NULL,
+    participant_id  UUID          NOT NULL,
+    selected_1      BOOLEAN,
+    selected_2      BOOLEAN,
+    selected_3      BOOLEAN,
+    selected_4      BOOLEAN,
+    content         VARCHAR(5000),
+    rank_1          INTEGER,
+    rank_2          INTEGER,
+    rank_3          INTEGER,
+    rank_4          INTEGER,
+    rating_value    INTEGER,
+    yes_no_value    BOOLEAN,
+    created_at      TIMESTAMPTZ   NOT NULL,
+    updated_at      TIMESTAMPTZ   NOT NULL,
+    CONSTRAINT pk_responses PRIMARY KEY (id),
+    CONSTRAINT uq_responses_question_participant UNIQUE (question_id, participant_id),
+    CONSTRAINT fk_responses_question FOREIGN KEY (question_id)
+        REFERENCES questions (id) ON DELETE CASCADE,
+    CONSTRAINT ck_response_rank_1 CHECK (rank_1 BETWEEN 1 AND 4),
+    CONSTRAINT ck_response_rank_2 CHECK (rank_2 BETWEEN 1 AND 4),
+    CONSTRAINT ck_response_rank_3 CHECK (rank_3 BETWEEN 1 AND 4),
+    CONSTRAINT ck_response_rank_4 CHECK (rank_4 BETWEEN 1 AND 4),
+    CONSTRAINT ck_response_rating_value CHECK (rating_value BETWEEN 0 AND 10)
+);
